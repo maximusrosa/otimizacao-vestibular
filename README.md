@@ -1,0 +1,3 @@
+# otimizacao-vestibular
+
+O problema consiste em determinar, para cada uma das nove provas do Vestibular o número de acertos que um candidato deve obter de modo a satisfazer diversos critérios mínimos, como obter pelo menos um acerto por prova, alcançar um total mínimo de 41 acertos e garantir um Argumento de Concorrência (AC) acima de um valor estabelecido (nota do último classificado com a mesma cota no ano anterior, por exemplo), ao mesmo tempo em que se minimiza a soma dos escores padronizados das provas selecionadas.
