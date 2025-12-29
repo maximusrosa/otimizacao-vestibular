@@ -26,9 +26,9 @@ def add_constraints(model, x, constraints_dict: dict[str, tuple[str, int]]):
             raise ValueError(f"Unknown operator {operator} for subject {subject}")
         
 
-def optimization(course: str, min_AC: float, constraints_dict: dict[str, tuple[str, int]], 
-                 std_score: dict[str, list[float]], min_subjects: list[str]=SUBJECTS) -> OptimizationResult:
-    
+def optimization(course: str, min_AC: float, std_score: dict[str, list[float]],
+                 constraints_dict: dict[str, tuple[str, int]], min_subjects: list[str]=SUBJECTS) -> OptimizationResult:
+
     weights = utils.read_course_weights(course)
     
     total_weights = sum(weights[subject] for subject in SUBJECTS)
@@ -95,7 +95,8 @@ def optimization(course: str, min_AC: float, constraints_dict: dict[str, tuple[s
         y_vals = {}
 
         for subject in SUBJECTS:
-            q_chosen = next(num_hits for num_hits in range(MIN_HITS, MAX_HITS +1) if pulp.value(x[subject][num_hits]) >= 1) # type: ignore
+            q_chosen = next(num_hits for num_hits in range(MIN_HITS, MAX_HITS + 1) 
+                            if pulp.value(x[subject][num_hits]) >= 1) # type: ignore
             ep_val = pulp.value(EP_var[subject])
             chosen[subject] = {"num_hits": q_chosen, "EP": ep_val}
 
@@ -106,8 +107,8 @@ def optimization(course: str, min_AC: float, constraints_dict: dict[str, tuple[s
         for subject,info in chosen.items():
             print(f" {subject:4s} -> HITS = {info['num_hits']:2d}, EP = {info['EP']:.4f}")
 
-        sum_p_y = sum(weights[subject]*y_vals[subject] for subject in SUBJECTS)
-        grade = total_weights/sum_p_y
+        sum_p_y = sum(weights[subject] * y_vals[subject] for subject in SUBJECTS)
+        grade = total_weights / sum_p_y
 
         result = OptimizationResult(chosen, AC=grade, threshold=min_AC, status=status)
 

@@ -10,6 +10,8 @@ from optimization import optimization
 #   entrada: nome do curso, restrições, nota mínima, escores padronizados
 
 # Teste
+course = "Enfermagem"
+
 min_AC = 622.42
 
 # --- Data: EP tables for num_hits = 3..15
@@ -25,13 +27,9 @@ std_score = {
     "BIO":  [413.48, 450.16, 486.84, 523.51, 560.19, 596.87, 633.55, 670.23, 706.91, 743.58, 780.26, 816.94, 853.62],
 }
 
-course = "Enfermagem"
 constraints = {"MAT": (">=", 10),
                "LEM": ("==", 12)}
 
 min_subjects = ["BIO","QUI"]
 
-optimization_result = optimization(course, min_AC, constraints, std_score, min_subjects)
-
-print("(Retornado para main) Optimization Result: ")
-print(optimization_result)
+optimization(course, min_AC, std_score, constraints, min_subjects)
