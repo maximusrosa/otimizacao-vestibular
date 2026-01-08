@@ -1,6 +1,6 @@
 from datetime import date
 
-MIN_HITS = 3
+MIN_HITS = 1
 MAX_HITS = 15
 
 SUBJECTS = ["BIO","FIS","QUI","MAT","HIS","LIT","PORT_RED","LEM","GEO"]
