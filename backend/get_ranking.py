@@ -12,7 +12,9 @@ year = "2025"
 
 exam = "Vestibular"
 
-course_name = "Ciência da Computação - Bacharelado"
+course = "Ciência da Computação - Bacharelado"
+
+entry_method = "L3/L5/LI_EP"
 
 # Configuração do Driver
 driver = webdriver.Chrome()
@@ -43,7 +45,7 @@ try:
     print(f"Foram encontrados {len(select_course.options) - 1} cursos disponíveis:")
     
     # ----- Seleciona o curso ------
-    select_course.select_by_visible_text(course_name)
+    select_course.select_by_visible_text(course)
 
     # Clica no botão "Carregar Dados"
     button_load = wait.until(EC.element_to_be_clickable((By.ID, "btnCarregarDados")))

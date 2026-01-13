@@ -11,7 +11,7 @@ class OptimizationResult:
         self.threshold = threshold
 
 
-def add_constraints(model, x, constraints_dict: dict[str, tuple[str, int]]):
+def addConstraints(model, x, constraints_dict: dict[str, list[str | int]]):
     for subject, (operator, value) in constraints_dict.items():
         if operator == ">=":
             model += pulp.lpSum(num_hits * x[subject][num_hits] 
@@ -26,10 +26,10 @@ def add_constraints(model, x, constraints_dict: dict[str, tuple[str, int]]):
             raise ValueError(f"Unknown operator {operator} for subject {subject}")
         
 
-def optimization(course: str, min_AC: float, std_score: dict[str, list[float]],
-                 constraints_dict: dict[str, tuple[str, int]], min_subjects: list[str]=SUBJECTS) -> OptimizationResult:
+def optimization(course: str, min_AC: float, std_scores: dict[str, list[float]],
+                 constraints_dict: dict[str, list[str | int]], min_subjects: list[str]=SUBJECTS) -> OptimizationResult:
 
-    weights = utils.read_course_weights(course)
+    weights = utils.readCourseWeights(course)
     
     total_weights = sum(weights[subject] for subject in SUBJECTS)
 
@@ -57,11 +57,11 @@ def optimization(course: str, min_AC: float, std_score: dict[str, list[float]],
         model += pulp.lpSum(x[subject][num_hits] for num_hits in range(MIN_HITS, MAX_HITS +1)) == 1, f"one_choice_{subject}"
 
         # EP definition (num_hits-3 because EP array is 0-indexed but num_hits starts at 3)
-        model += EP_var[subject] == pulp.lpSum(std_score[subject][num_hits-MIN_HITS] * 
+        model += EP_var[subject] == pulp.lpSum(std_scores[subject][num_hits-MIN_HITS] * 
                                             x[subject][num_hits] for num_hits in range(MIN_HITS, MAX_HITS +1)), f"EP_def_{subject}"
 
         # y definition
-        model += y_var[subject] == pulp.lpSum((1.0 / std_score[subject][num_hits-MIN_HITS]) *
+        model += y_var[subject] == pulp.lpSum((1.0 / std_scores[subject][num_hits-MIN_HITS]) *
                                             x[subject][num_hits] for num_hits in range(MIN_HITS, MAX_HITS +1)), f"y_def_{subject}"
 
     # Minimum AC
@@ -73,7 +73,7 @@ def optimization(course: str, min_AC: float, std_score: dict[str, list[float]],
                         for subject in SUBJECTS for num_hits in range(MIN_HITS, MAX_HITS +1)) >= 41, "total_hits"
     
     # User-defined constraints
-    add_constraints(model, x, constraints_dict)
+    addConstraints(model, x, constraints_dict)
 
     # --------------- Objective ------------------ #
 
@@ -105,15 +105,15 @@ def optimization(course: str, min_AC: float, std_score: dict[str, list[float]],
         print("\nChosen EP values:")
 
         for subject,info in chosen.items():
-            print(f" {subject:4s} -> HITS = {info['num_hits']:2d}, EP = {info['EP']:.4f}")
+            print(f" {subject:4s} -> HITS = {info['num_hits']:2d}, EP = {info['EP']:.2f}")
 
         sum_p_y = sum(weights[subject] * y_vals[subject] for subject in SUBJECTS)
-        grade = total_weights / sum_p_y
+        grade = round(total_weights / sum_p_y, 2)
 
         result = OptimizationResult(chosen, AC=grade, threshold=min_AC, status=status)
 
         print()
-        print(f"nota = {grade:.6f} (limite {min_AC})")
+        print(f"nota = {grade:.2f} (limite {min_AC})")
         #print(f"\nSum p_i*y_i = {sum_p_y:.6f}")
         #print("Objective =", pulp.value(model.objective))
     else:

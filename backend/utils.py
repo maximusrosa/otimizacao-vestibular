@@ -1,6 +1,6 @@
 from constants import COURSE_WEIGHTS_PATH
 
-def read_course_weights(course):
+def readCourseWeights(course):
     with open(COURSE_WEIGHTS_PATH, 'r', encoding='utf-8') as f:
         lines = f.readlines()
         

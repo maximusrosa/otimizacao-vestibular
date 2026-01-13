@@ -1,8 +1,9 @@
-from constants import YEAR
 import requests
 from bs4 import BeautifulSoup
 
-url = f"https://www.ufrgs.br/vestibular/cv{YEAR - 1}/histogramas/"
+year = "2025"
+
+url = f"https://www.ufrgs.br/vestibular/cv{year}/histogramas/"
 html = requests.get(url).text
 
 soup = BeautifulSoup(html, "html.parser")
