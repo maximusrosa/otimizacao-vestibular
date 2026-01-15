@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
+* {
+  box-sizing: border-box;
+  font-family: Open Sans, Arial, Helvetica, sans-serif;
+}
+
+body {
+  background: #ffffff;
+  color: #333;
+  margin: 0;
+  padding: 24px;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
