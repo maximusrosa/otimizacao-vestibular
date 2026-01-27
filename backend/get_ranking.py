@@ -68,12 +68,38 @@ try:
         exit()
     else:
         rows = table.find_all('tr')[1:]
-        print(f"\nDados extraídos para o curso selecionado:")
+        
+        # Dicionário para armazenar candidatos por modalidade
+        entry_modes = {}
+        
+        print(f"\nProcessando dados do curso selecionado...")
         for row in rows:
             columns = row.find_all('td')
-            if columns:
+            if columns and len(columns) > 7:
+
                 data = [col.text.strip() for col in columns]
-                print(data)
+                entry_slot = data[6]
+                status = data[7]
+
+                if entry_slot != '-' and status == "Lotado em vaga":
+                    score = data[3] if len(data) > 3 else '0'
+                    # Separa modalidades caso necessário
+                    entry_slots = entry_slot.split('/')
+                    # Armazena a menor nota para cada modalidade (nota de corte)
+                    for entry_mode in entry_slots:
+                        entry_mode = entry_mode.strip()
+                        if entry_mode not in entry_modes or float(score) < float(entry_modes[entry_mode]):
+                            entry_modes[entry_mode] = score
+        
+        # Exibe notas de corte por modalidade
+        print("\n" + "="*60)
+        print("NOTAS DE CORTE POR MODALIDADE")
+        print("="*60)
+        
+        for entry_mode in sorted(entry_modes.keys()):
+            score = entry_modes[entry_mode]
+            print(f"\nModalidade: {entry_mode}")
+            print(f"Nota de corte: {score}")
 
 finally:
     driver.quit()
