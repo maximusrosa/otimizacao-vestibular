@@ -82,7 +82,6 @@
   padding: 20px;
   border-radius: var(--border-radius-lg);
   text-align: center;
-  box-shadow: var(--shadow-sm);
 }
 
 /* Cards de informação estilo imagem */
@@ -233,7 +232,7 @@ table tbody td {
 }
 
 table tbody tr {
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: none;
 }
 
 table tbody tr:hover {
@@ -241,20 +240,20 @@ table tbody tr:hover {
 }
 
 /* Tabela com cabeçalho colorido */
-.table-header-primary thead th {
+.table-header-primary thead th,
+.table-header-secondary thead th {
   background-color: var(--color-primary);
   color: var(--color-white);
-  padding: 10px 8px;
   text-align: center;
   font-weight: 600;
 }
 
-.table-header-accent thead th {
-  background-color: var(--color-accent);
-  color: var(--color-white);
+.table-header-primary thead th {
+  padding: 10px 8px;
+}
+
+.table-header-secondary thead th {
   padding: 8px 6px;
-  text-align: center;
-  font-weight: 600;
   font-size: var(--font-size-sm);
 }
 

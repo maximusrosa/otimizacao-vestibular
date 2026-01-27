@@ -1,7 +1,10 @@
 import '../App.css';
-import './Resultados.css';
+import './Results.css';
+import { useNavigate } from 'react-router-dom';
 
 function Resultados(){
+    const navigate = useNavigate();
+    
     // Dados temporários de teste - Resultados das Provas
     const provasResultados = [
         { prova: 'Biologia', acertos: 12, escorePadronizado: 545.32, media: 8.5432, desvioPadrao: 2.3456 },
@@ -142,7 +145,7 @@ function Resultados(){
         <h2 className="ranking-section">Classificação - Inscrições UFRGS</h2>
 
         <div className="table-wrapper ranking-table-wrapper">
-            <table className="ranking-table table-header-accent table-centered">
+            <table className="ranking-table table-header-secondary table-centered">
                 <thead>
                     <tr>
                         <th>Classificação</th>
@@ -169,7 +172,7 @@ function Resultados(){
         </div>
 
         <div className="actions">
-            <button className="main-button">Voltar</button>
+            <button className="main-button" onClick={() => navigate('/')}>Voltar</button>
         </div>
         </div>
     );

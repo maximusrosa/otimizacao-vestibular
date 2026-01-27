@@ -1,3 +1,44 @@
+/* Variáveis CSS globais */
+:root {
+  --color-primary: #0b5fa5;
+  --color-secondary: #1f77b4;
+  --color-accent: #f28c28;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-gray: #666;
+  --color-light-gray: #ccc;
+  --color-border: #ddd;
+  --color-hover-bg: #f5f5f5;
+  --color-highlight-bg: #fff3cd;
+  --color-text-secondary: #666;
+  
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-base: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 28px;
+  
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  
+  --border-radius-sm: 4px;
+  --border-radius-md: 6px;
+  --border-radius-lg: 8px;
+  
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos globais */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
 h1 {
   color: #0b5fa5;
   font-size: 22px;
@@ -102,6 +143,10 @@ tbody input[type="checkbox"] {
   font-size: 14px;
   border-radius: 6px;
   cursor: pointer;
+}
+
+.main-button:hover {
+  background: #0b5fa5;
 }
 
 
