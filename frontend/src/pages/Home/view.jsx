@@ -1,9 +1,15 @@
-import '../App.css';
-import { useNavigate } from 'react-router-dom';
+import '../../index.css';
+import './styles.css';
 
-function HomePage(){
-    const navigate = useNavigate();
-
+// Recebe tudo o que precisa via "props"
+const HomeView = ({ 
+    course, 
+    setCourse, 
+    handleOptimize, 
+    subjects, 
+    handleSubjectChange,
+    navigate 
+}) => {
     return (
     <div className="container">
     <h1>Otimizador de Acertos - Vestibular UFRGS</h1>
@@ -123,7 +129,6 @@ function HomePage(){
     </div>
     </div>
     );
-}
-export default HomePage;
+};
 
-
+export default HomeView;

@@ -1,0 +1,25 @@
+/* Estilos específicos da Página de Resultados */
+
+.results-table {
+  font-size: var(--font-size-md);
+}
+
+.ranking-section {
+  margin-top: 48px;
+}
+
+.ranking-table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 48px !important; /* Sobrescreve margem padrão */
+}
+
+.ranking-table {
+  font-size: var(--font-size-base);
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.ranking-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
