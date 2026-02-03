@@ -1,5 +1,3 @@
-from datetime import date
-
 MIN_HITS = 1
 MAX_HITS = 15
 

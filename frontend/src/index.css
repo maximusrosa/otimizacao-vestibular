@@ -40,6 +40,7 @@
 }
 
 body {
+  font-family: 'Open Sans', sans-serif;
   background: var(--color-white);
   color: #333;
   margin: 0;

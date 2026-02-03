@@ -11,23 +11,21 @@ class OptimizationResult:
         self.threshold = threshold
 
 
-def addConstraints(model, x, constraints_dict: dict[str, list[str | int]]):
-    for subject, (operator, value) in constraints_dict.items():
-        if operator == ">=":
-            model += pulp.lpSum(num_hits * x[subject][num_hits] 
-                                for num_hits in range(MIN_HITS, MAX_HITS +1)) >= value, f"min_hits_{subject}"
-        elif operator == "<=":
-            model += pulp.lpSum(num_hits * x[subject][num_hits] 
-                                for num_hits in range(MIN_HITS, MAX_HITS +1)) <= value, f"max_hits_{subject}"
-        elif operator == "==":
-            model += pulp.lpSum(num_hits * x[subject][num_hits] 
-                                for num_hits in range(MIN_HITS, MAX_HITS +1)) == value, f"hits_{subject}"
-        else:
-            raise ValueError(f"Unknown operator {operator} for subject {subject}")
-        
+def addConstraints(model, x, constraints_dict: dict[str, list[list[str | int]]]):
+    for subject, constraints in constraints_dict.items():
+        for i, (operator, value) in enumerate(constraints):
+            if operator == ">=":
+                model += pulp.lpSum(num_hits * x[subject][num_hits] 
+                                    for num_hits in range(MIN_HITS, MAX_HITS +1)) >= value, f"min_hits_{subject}_{i}"
+            elif operator == "<=":
+                model += pulp.lpSum(num_hits * x[subject][num_hits] 
+                                    for num_hits in range(MIN_HITS, MAX_HITS +1)) <= value, f"max_hits_{subject}_{i}"
+            else:
+                raise ValueError(f"Unknown operator {operator} for subject {subject}")
+
 
 def optimization(course: str, min_AC: float, std_scores: dict[str, list[float]],
-                 constraints_dict: dict[str, list[str | int]], min_subjects: list[str]=SUBJECTS) -> OptimizationResult:
+                 constraints_dict: dict[str, list[list[str | int]]], min_subjects: list[str]=SUBJECTS) -> OptimizationResult:
 
     weights = utils.readCourseWeights(course)
     
@@ -56,7 +54,7 @@ def optimization(course: str, min_AC: float, std_scores: dict[str, list[float]],
         # exactly one choice
         model += pulp.lpSum(x[subject][num_hits] for num_hits in range(MIN_HITS, MAX_HITS +1)) == 1, f"one_choice_{subject}"
 
-        # EP definition (num_hits-3 because EP array is 0-indexed but num_hits starts at 3)
+        # EP definition
         model += EP_var[subject] == pulp.lpSum(std_scores[subject][num_hits-MIN_HITS] * 
                                             x[subject][num_hits] for num_hits in range(MIN_HITS, MAX_HITS +1)), f"EP_def_{subject}"
 
@@ -73,6 +71,10 @@ def optimization(course: str, min_AC: float, std_scores: dict[str, list[float]],
                         for subject in SUBJECTS for num_hits in range(MIN_HITS, MAX_HITS +1)) >= 41, "total_hits"
     
     # User-defined constraints
+    # NOTA: Matérias que não estiverem em 'constraints_dict' são tratadas como variáveis livres.
+    # - Se não estiverem sendo minimizadas (min_subjects), o solver tenderá a aumentar seus acertos
+    #   (até o máximo) para reduzir o 'y' total e facilitar o atingimento do AC mínimo.
+    # - Isso permite "compensar" notas baixas nas matérias alvo.
     addConstraints(model, x, constraints_dict)
 
     # --------------- Objective ------------------ #
