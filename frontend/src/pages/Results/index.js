@@ -1,8 +1,15 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ResultsView from './view';
 
 function Resultados(){
     const navigate = useNavigate();
+    const location = useLocation();
+    
+    // Extrai os dados enviados pela página anterior
+    const { results, historicalData } = location.state || {};
+    
+    console.log("Dados de otimização:", results);
+    console.log("Dados históricos de notas de corte:", historicalData);
     
     // Dados temporários de teste - Resultados das Provas
     const provasResultados = [
@@ -86,6 +93,7 @@ function Resultados(){
             rankingClassificacao={rankingClassificacao}
             formatarNumero={formatarNumero}
             navigate={navigate}
+            historicalData={historicalData}
         />
     );
 }

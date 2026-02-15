@@ -1,8 +1,9 @@
-from optimization import optimization
+from optimization import optimization, OptimizationResult
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
+import utils
 # from get_scores import getScores
 from get_ranking import getRanking, getMinAC
 
@@ -38,6 +39,11 @@ class UserData(BaseModel):
     # Dados obtidos por web scraping (não vão ficar aqui)
     std_scores: dict[str, list[float]]
 
+# Define os campos que serão retornados para o front-end
+class ReturnedData(BaseModel):
+    result: dict
+    graphJson: dict[int, float]
+
 
 @app.post("/optimize")
 def optimize(user_data: UserData):
@@ -50,6 +56,8 @@ def optimize(user_data: UserData):
     # result = optimization(user_data.course, min_AC, std_scores, user_data.constraints, user_data.min_subjects)
 
     result = optimization(user_data.course, min_AC, user_data.std_scores, user_data.constraints, user_data.min_subjects)
+
+    graphData = utils.getGraphData(int(user_data.reference_year), user_data.course, user_data.entry_method)
     
     # Retorna o dicionário de atributos do objeto OptimizationResult para serialização JSON
-    return result.__dict__
+    return ReturnedData(result=result.__dict__, graphJson=graphData)

@@ -6,8 +6,9 @@ import { MIN_HITS, MAX_HITS, SUBJECTS } from '../../constants';
 const optimizationRoute = 'http://localhost:8000/optimize';
 
 const MOCK_DATA = {
-    course: "Enfermagem",
-    min_AC: 622.42,
+    course: "Ciência da Computação - Bacharelado",
+    reference_year: "2025",
+    entry_method: "LI_EP",
     std_scores: {
         "PORT_RED": [317.14, 353.19, 389.25, 425.31, 461.37, 497.43, 533.49, 569.55, 605.61, 641.67, 677.73, 713.79, 749.85, 785.91, 821.97],
         "LIT":  [304.41, 343.08, 381.76, 420.44, 459.12, 497.80, 536.48, 575.16, 613.84, 652.51, 691.19, 729.87, 768.55, 807.23, 845.91],
@@ -24,11 +25,11 @@ const MOCK_DATA = {
 function HomePage(){
     const navigate = useNavigate();
     
-    // Estado do formulário
+    // Estado do formulário - inicializado com valores de teste
     const [course, setCourse] = useState(MOCK_DATA.course);
-    const [year, setYear] = useState('');
+    const [year, setYear] = useState(MOCK_DATA.reference_year);
     const [language, setLanguage] = useState('');
-    const [accessForm, setAccessForm] = useState('');
+    const [accessForm, setAccessForm] = useState(MOCK_DATA.entry_method);
     const [subjectsData, setSubjectsData] = useState(
       SUBJECTS.reduce((acc, subj) => ({
         ...acc,
@@ -100,7 +101,10 @@ function HomePage(){
         min_subjects: min_subjects,
         // Enviando mock data pois o form não tem os scrapers ainda
         std_scores: MOCK_DATA.std_scores,
-        min_AC: MOCK_DATA.min_AC,
+        // Campos necessários para obter dados históricos de notas de corte
+        reference_year: year,
+        exam: 'Vestibular', // Precisa ter primeira letra maiúscula para o Selenium
+        entry_method: accessForm,
       };
 
       console.log("Enviando Payload:", payload);
@@ -114,8 +118,14 @@ function HomePage(){
         
         const result = await response.json();
         console.log("Resultado Recebido:", result);
+        console.log("Dados do gráfico (notas de corte histórico):", result.graphJson);
 
-        navigate('/resultados', { state: { results: result } });
+        navigate('/resultados', { 
+          state: { 
+            results: result.result,
+            historicalData: result.graphJson 
+          } 
+        });
         
       } catch (error) {
         alert("Erro na otimização. Verifique se o backend está rodando.");

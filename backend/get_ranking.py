@@ -2,26 +2,33 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select, WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 from constants import MODE_PATTERNS, INF
 import re
 
 URL = "https://www1.ufrgs.br/PortalEnsino/GraduacaoProcessoSeletivo/index.php/DivulgacaoDadosChamamento"
 
-# ---------- Variáveis Globais ----------
-driver = webdriver.Chrome()
-wait = WebDriverWait(driver, 10)
+
+def create_driver():
+    """Cria e configura o driver do Selenium em modo headless"""
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')  # Roda sem interface gráfica
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    chrome_options.add_argument('--disable-gpu')
+    return webdriver.Chrome(options=chrome_options)
 
 
 # ---------- Seleções ----------
-def select_year(year: str):
+def select_year(driver, wait, year: str):
     select_year = Select(wait.until(
         EC.presence_of_element_located((By.ID, "selectAno"))
     ))
     select_year.select_by_visible_text(year)
 
 
-def select_exam(exam: str):
+def select_exam(driver, wait, exam: str):
     dropdown_exam = wait.until(
         EC.element_to_be_clickable((By.ID, "selectConcurso"))
     )
@@ -30,7 +37,7 @@ def select_exam(exam: str):
     select_exam.select_by_visible_text(exam)
 
 
-def select_course(course: str):
+def select_course(driver, wait, course: str):
     dropdown_course = wait.until(
         EC.presence_of_element_located((By.ID, "selectCurso"))
     )
@@ -42,7 +49,7 @@ def select_course(course: str):
 
 
 # ---------- Carregar Dados ----------
-def load_data():
+def load_data(driver, wait):
     button_load = wait.until(
         EC.element_to_be_clickable((By.ID, "btnCarregarDados"))
     )
@@ -56,13 +63,16 @@ def load_data():
 
 # ---------- Extração ----------
 def getRanking(year: str, exam: str, course: str) -> list[list[str]]:
+    driver = create_driver()
+    wait = WebDriverWait(driver, 10)
+    
     try:
         driver.get(URL)
 
-        select_year(year)
-        select_exam(exam)
-        select_course(course)
-        load_data()
+        select_year(driver, wait, year)
+        select_exam(driver, wait, exam)
+        select_course(driver, wait, course)
+        load_data(driver, wait)
 
         soup = BeautifulSoup(driver.page_source, "html.parser")
 

@@ -1,12 +1,14 @@
 import '../../index.css';
 import './styles.css';
+import { Bar, BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LabelList } from 'recharts';
 
 const ResultsView = ({ 
     provasResultados, 
     resumoResultados, 
     rankingClassificacao,
     formatarNumero,
-    navigate 
+    navigate,
+    historicalData 
 }) => {
     return (
         <div className="container">
@@ -98,6 +100,40 @@ const ResultsView = ({
                     </tbody>
                 </table>
             </div>
+
+            {historicalData && Object.keys(historicalData).length > 0 && (
+                <div className="historical-data-graph">
+                    <h2 className="ranking-section">Notas de Corte Históricas (Últimos 5 Anos)</h2>
+                    <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                        <BarChart 
+                            width={700} 
+                            height={400} 
+                            data={Object.entries(historicalData)
+                                .sort(([yearA], [yearB]) => parseInt(yearA) - parseInt(yearB))
+                                .map(([year, score]) => ({ 
+                                    year, 
+                                    'Nota de Corte': parseFloat(score.toFixed(2))
+                                }))}
+                            margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis 
+                                dataKey="year" 
+                            />
+                            <YAxis 
+                                domain={[
+                                    (dataMin) => Math.floor(dataMin * 0.98), 
+                                    (dataMax) => Math.ceil(dataMax * 1.02)
+                                ]}
+                            />
+                            <Legend />
+                            <Bar dataKey="Nota de Corte" fill="#0b5fa5">
+                                <LabelList dataKey="Nota de Corte" position="top" formatter={(value) => value.toFixed(2)} />
+                            </Bar>
+                        </BarChart>
+                    </div>
+                </div>
+            )}
 
             <div className="actions">
                 <button className="main-button" onClick={() => navigate('/')}>Voltar</button>
