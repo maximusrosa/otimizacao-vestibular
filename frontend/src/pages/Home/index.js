@@ -27,13 +27,13 @@ function HomePage(){
     
     // Estado do formulário - inicializado com valores de teste
     const [course, setCourse] = useState(MOCK_DATA.course);
-    const [year, setYear] = useState(MOCK_DATA.reference_year);
+    const [referenceYear, setReferenceYear] = useState(MOCK_DATA.reference_year);
     const [language, setLanguage] = useState('');
-    const [accessForm, setAccessForm] = useState(MOCK_DATA.entry_method);
+    const [entryMethod, setEntryMethod] = useState(MOCK_DATA.entry_method);
     const [subjectsData, setSubjectsData] = useState(
       SUBJECTS.reduce((acc, subj) => ({
         ...acc,
-        [subj.id]: { min: '', max: '', minimize: false }
+        [subj.id]: { min: MIN_HITS, max: MAX_HITS, minimize: false }
       }), {})
     );
 
@@ -72,8 +72,8 @@ function HomePage(){
     };
 
     const handleOptimize = async () => {
-      // 1. Construir min_subjects
-      const min_subjects = Object.entries(subjectsData)
+      // 1. Construir minSubjects
+      const minSubjects = Object.entries(subjectsData)
         // Filtra matérias onde minimize está TRUE
         .filter(([_, data]) => data.minimize)
         .map(([id, _]) => id);
@@ -98,13 +98,11 @@ function HomePage(){
       const payload = {
         course: course,
         constraints: constraints,
-        min_subjects: min_subjects,
+        min_subjects: minSubjects,
+        reference_year: referenceYear,
+        entry_method: entryMethod,
         // Enviando mock data pois o form não tem os scrapers ainda
         std_scores: MOCK_DATA.std_scores,
-        // Campos necessários para obter dados históricos de notas de corte
-        reference_year: year,
-        exam: 'Vestibular', // Precisa ter primeira letra maiúscula para o Selenium
-        entry_method: accessForm,
       };
 
       console.log("Enviando Payload:", payload);
@@ -138,12 +136,12 @@ function HomePage(){
         <HomeView 
             course={course}
             setCourse={(e) => setCourse(e.target.value)}
-            year={year}
-            setYear={(e) => setYear(e.target.value)}
+            reference_year={referenceYear}
+            setReferenceYear={(e) => setReferenceYear(e.target.value)}
             language={language}
             setLanguage={(e) => setLanguage(e.target.value)}
-            accessForm={accessForm}
-            setAccessForm={(e) => setAccessForm(e.target.value)}
+            entryMethod={entryMethod}
+            setEntryMethod={(e) => setEntryMethod(e.target.value)}
             handleOptimize={handleOptimize}
             subjects={subjectsData}
             handleSubjectChange={handleSubjectChange}

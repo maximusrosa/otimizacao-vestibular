@@ -44,7 +44,7 @@ def select_course(driver, wait, course: str):
     select_course = Select(dropdown_course)
     wait.until(lambda d: len(select_course.options) > 1)
 
-    print(f"Foram encontrados {len(select_course.options) - 1} cursos disponíveis.")
+    #print(f"Foram encontrados {len(select_course.options) - 1} cursos disponíveis.")
     select_course.select_by_visible_text(course)
 
 
@@ -62,7 +62,7 @@ def load_data(driver, wait):
 
 
 # ---------- Extração ----------
-def getRanking(year: str, exam: str, course: str) -> list[list[str]]:
+def getRanking(year: str, course: str, exam:str="Vestibular") -> list[list[str]]:
     driver = create_driver()
     wait = WebDriverWait(driver, 10)
     
@@ -106,8 +106,8 @@ def getMinAC(ranking: list[list[str]], target_mode: str) -> float:
         entry_mode = candidate[6]  # Vaga de ingresso
         status = candidate[7]  # Situação
 
-        if pattern.search(entry_mode) and status in ["Matriculado", "Lotado em vaga"]:                    
-                if score < min_score:
+        if pattern.search(entry_mode) and status in ["Matriculado", "Lotado em vaga", "Renunciante"]:                    
+                if score < min_score: 
                     min_score = score
 
     if min_score != INF:
@@ -117,12 +117,11 @@ def getMinAC(ranking: list[list[str]], target_mode: str) -> float:
 
 
 def main():
-    year = "2026"
-    exam = "Vestibular"
+    year = "2022"
     course = "Ciência da Computação - Bacharelado"
     target_mode = "LI_EP"
 
-    ranking = getRanking(year, exam, course)
+    ranking = getRanking(year, course)
     min_score = getMinAC(ranking, target_mode)
 
     print(f"A nota de corte para {target_mode} é: {min_score}")

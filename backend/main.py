@@ -11,8 +11,8 @@ app = FastAPI()
 
 # Configuração do CORS
 origins = [
-    "http://localhost:3000", # Endereço do seu front-end React
-    "http://127.0.0.1:3000",
+    "http://localhost:3000", # front-end
+    "http://127.0.0.1:3000", # back-end
 ]
 
 app.add_middleware(
@@ -33,7 +33,6 @@ class UserData(BaseModel):
     # Para web scraping
     #foreign_language: str
     reference_year: str
-    exam: str
     entry_method: str
 
     # Dados obtidos por web scraping (não vão ficar aqui)
@@ -49,10 +48,9 @@ class ReturnedData(BaseModel):
 def optimize(user_data: UserData):
     #std_scores = getScores(user_data.reference_year, user_data.foreign_language)
 
-    ranking = getRanking(user_data.reference_year, user_data.exam, user_data.course)
+    ranking = getRanking(user_data.reference_year, user_data.course)
     min_AC = getMinAC(ranking, user_data.entry_method)
 
-    # Chama a otimização passando os dados recebidos no corpo da requisição
     # result = optimization(user_data.course, min_AC, std_scores, user_data.constraints, user_data.min_subjects)
 
     result = optimization(user_data.course, min_AC, user_data.std_scores, user_data.constraints, user_data.min_subjects)

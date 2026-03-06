@@ -5,12 +5,12 @@ import './styles.css';
 const HomeView = ({ 
     course, 
     setCourse, 
-    year,
-    setYear,
+    referenceYear,
+    setReferenceYear,
     language,
     setLanguage,
-    accessForm,
-    setAccessForm,
+    entryMethod,
+    setEntryMethod,
     handleOptimize, 
     subjects, 
     handleSubjectChange, 
@@ -39,7 +39,7 @@ const HomeView = ({
                 <div className="field">
                     <label>Ano</label>
                     <div className="select-wrapper">
-                        <select value={year} onChange={setYear}></select>
+                        <select value={referenceYear} onChange={setReferenceYear}></select>
                         <button className="clear">×</button>
                     </div>
                 </div>
@@ -55,7 +55,7 @@ const HomeView = ({
                 <div className="field">
                     <label>Forma de Acesso</label>
                     <div className="select-wrapper">
-                        <select value={accessForm} onChange={setAccessForm}></select>
+                        <select value={entryMethod} onChange={setEntryMethod}></select>
                         <button className="clear">×</button>
                     </div>
                 </div>
