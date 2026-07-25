@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 from . import utils
+from .get_scores import get_scores
 from .get_ranking import get_ranking, get_min_AC
 
 app = FastAPI()
@@ -47,10 +48,13 @@ def health():
 
 @app.post("/optimize")
 def optimize(user_data: UserData):
+    std_scores = get_scores(user_data.reference_year, user_data.foreign_language)
     ranking = get_ranking(user_data.reference_year, user_data.course)
     min_AC = get_min_AC(ranking, user_data.entry_method)
+
+    result = optimization(user_data.course, min_AC, std_scores, user_data.constraints, user_data.min_subjects)
 
     graphData = utils.getGraphData(int(user_data.reference_year), user_data.course, user_data.entry_method)
 
     # Retorna o dicionário de atributos do objeto OptimizationResult para serialização JSON
-    return ReturnedData(result={}, graphJson=graphData)
+    return ReturnedData(result=result.__dict__, graphJson=graphData)
