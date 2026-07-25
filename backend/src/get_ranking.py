@@ -60,22 +60,9 @@ def load_data(driver, wait):
 
 
 # ---------- Extração ----------
-def get_ranking(year: str, course: str, exam:str="Vestibular") -> list[list[str]]:
-    driver = create_driver()
-    wait = WebDriverWait(driver, 10)
-
-    try:
-        driver.get(RANKING_URL)
-
-        select_year(driver, wait, year)
-        select_exam(driver, wait, exam)
-        select_course(driver, wait, course)
-        load_data(driver, wait)
-
-        soup = BeautifulSoup(driver.page_source, "html.parser")
-
-    finally:
-        driver.quit()
+def parse_ranking(html: str) -> list[list[str]]:
+    """Extrai a tabela de ranking a partir do HTML da página de chamamento."""
+    soup = BeautifulSoup(html, "html.parser")
 
     table = soup.find("table", {"class": "tabDados items modelo1"})
 
@@ -91,6 +78,26 @@ def get_ranking(year: str, course: str, exam:str="Vestibular") -> list[list[str]
         ranking.append(candidate)
 
     return ranking
+
+
+def get_ranking(year: str, course: str, exam:str="Vestibular") -> list[list[str]]:
+    driver = create_driver()
+    wait = WebDriverWait(driver, 10)
+
+    try:
+        driver.get(RANKING_URL)
+
+        select_year(driver, wait, year)
+        select_exam(driver, wait, exam)
+        select_course(driver, wait, course)
+        load_data(driver, wait)
+
+        html = driver.page_source
+
+    finally:
+        driver.quit()
+
+    return parse_ranking(html)
 
 
 def get_min_AC(ranking: list[list[str]], target_mode: str) -> float:
