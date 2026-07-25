@@ -1,0 +1,22 @@
+# Roda a suíte de testes (inclusive integração com Chrome) dentro do container backend.
+#
+#   docker compose -f docker-compose.test.yml up --build --abort-on-container-exit
+#
+# Usa a imagem do backend (que já traz google-chrome-stable), instala as
+# dependências de teste e monta a pasta backend/ em /app para enxergar o pytest.ini.
+services:
+  tests:
+    build: ./backend
+    shm_size: "512mb"       # Chrome headless precisa de /dev/shm generoso
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    environment:
+      - PYTHONPATH=/app
+    entrypoint: []
+    command:
+      - /bin/sh
+      - -c
+      - |
+        pip install --no-cache-dir --quiet pytest responses &&
+        python -m pytest -m integration -v

@@ -1,0 +1,22 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    shm_size: "256mb"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      start_period: 15s # first 15s: failures are ignored
+      interval: 300s     # after that: check every 5 min
+      timeout: 5s       # each check must respond within 5s
+      retries: 1
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"   # host:container — container now uses 80 (nginx), not 3000
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+    depends_on:
+      backend:
+        condition: service_healthy

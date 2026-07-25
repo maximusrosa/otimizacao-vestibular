@@ -1,4 +1,4 @@
-from constants import COURSE_WEIGHTS_PATH
+from .constants import COURSE_WEIGHTS_PATH
 
 def readCourseWeights(course):
     with open(COURSE_WEIGHTS_PATH, 'r', encoding='utf-8') as f:

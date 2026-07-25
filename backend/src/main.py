@@ -1,11 +1,11 @@
-from optimization import optimization, OptimizationResult
+from .optimization import optimization, OptimizationResult
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
-import utils
-# from get_scores import getScores
-from get_ranking import getRanking, getMinAC
+from . import utils
+from .get_scores import get_scores
+from .get_ranking import get_ranking, get_min_AC
 
 app = FastAPI()
 
@@ -31,12 +31,9 @@ class UserData(BaseModel):
     min_subjects: list[str]
 
     # Para web scraping
-    #foreign_language: str
+    foreign_language: str
     reference_year: str
     entry_method: str
-
-    # Dados obtidos por web scraping (não vão ficar aqui)
-    std_scores: dict[str, list[float]]
 
 # Define os campos que serão retornados para o front-end
 class ReturnedData(BaseModel):
@@ -44,18 +41,20 @@ class ReturnedData(BaseModel):
     graphJson: dict[int, float]
 
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
 @app.post("/optimize")
 def optimize(user_data: UserData):
-    #std_scores = getScores(user_data.reference_year, user_data.foreign_language)
+    std_scores = get_scores(user_data.reference_year, user_data.foreign_language)
+    ranking = get_ranking(user_data.reference_year, user_data.course)
+    min_AC = get_min_AC(ranking, user_data.entry_method)
 
-    ranking = getRanking(user_data.reference_year, user_data.course)
-    min_AC = getMinAC(ranking, user_data.entry_method)
-
-    # result = optimization(user_data.course, min_AC, std_scores, user_data.constraints, user_data.min_subjects)
-
-    result = optimization(user_data.course, min_AC, user_data.std_scores, user_data.constraints, user_data.min_subjects)
+    result = optimization(user_data.course, min_AC, std_scores, user_data.constraints, user_data.min_subjects)
 
     graphData = utils.getGraphData(int(user_data.reference_year), user_data.course, user_data.entry_method)
-    
+
     # Retorna o dicionário de atributos do objeto OptimizationResult para serialização JSON
     return ReturnedData(result=result.__dict__, graphJson=graphData)
