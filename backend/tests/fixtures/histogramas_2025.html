@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+        <title>Vestibular 2025</title>
+
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="../css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+        <link href="../css/styles.css" type="text/css" rel="stylesheet" media="screen,projection">
+
+        <script type="text/javascript" src="../js/Chart.min.js"></script>
+        <script type="text/javascript" src='../js/jquery.min.js'></script>
+        <script type="text/javascript" src="../js/materialize.min.js"></script>
+        <script type="text/javascript" src="../js/main.js"></script>
+
+        <script type="text/javascript">
+            var randomScalingFactor = function () {
+                return Math.round(Math.random() * 100)
+            };
+            Chart.defaults.global.pointHitDetectionRadius = 1;
+            Chart.defaults.global.customTooltips = function (tooltip) {
+
+                var tooltipEl = $('#chartjs-tooltip');
+
+                if (!tooltip) {
+                    tooltipEl.css({
+                        opacity: 0
+                    });
+                    return;
+                }
+                tooltipEl.removeClass('above below');
+                tooltipEl.addClass(tooltip.yAlign);
+
+                tooltipEl.html(tooltip.text);
+
+                tooltipEl.css({
+                    opacity: 1,
+                    left: tooltip.chart.canvas.offsetLeft + tooltip.x + 'px',
+                    top: tooltip.chart.canvas.offsetTop + tooltip.y + 'px',
+                    fontFamily: tooltip.fontFamily,
+                    fontSize: tooltip.fontSize,
+                    fontStyle: tooltip.fontStyle,
+                });
+            };
+
+                              	            var barChartDatapor = {
+                labels: ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"],
+                datasets: [
+                    {
+                        fillColor: "#9BC778",
+                        strokeColor: "#9BC778",
+                        highlightFill: "#E6244D",
+                        highlightStroke: "#E6244D",
+                        data: [18,70,231,517,1065,1641,2074,2393,2510,2333,2011,1577,1179,700,309,72]
+                    }
+                ]
+
+            };
+            var escoresPadronizadospor = ["208,96","245,02","281,08","317,14","353,19","389,25","425,31","461,37","497,43","533,49","569,55","605,61","641,67","677,73","713,79","749,85"];
+                        	            var barChartDatalit = {
+                labels: ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"],
+                datasets: [
+                    {
+                        fillColor: "#9BC778",
+                        strokeColor: "#9BC778",
+                        highlightFill: "#E6244D",
+                        highlightStroke: "#E6244D",
+                        data: [22,67,209,503,892,1367,2084,2533,2765,2650,2281,1627,1007,475,174,44]
+                    }
+                ]
+
+            };
+            var escoresPadronizadoslit = ["188,37","227,05","265,73","304,41","343,08","381,76","420,44","459,12","497,80","536,48","575,16","613,84","652,51","691,19","729,87","768,55"];
+                        	            var barChartDatahis = {
+                labels: ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"],
+                datasets: [
+                    {
+                        fillColor: "#9BC778",
+                        strokeColor: "#9BC778",
+                        highlightFill: "#E6244D",
+                        highlightStroke: "#E6244D",
+                        data: [11,55,195,480,1047,1665,2363,2679,2790,2490,2079,1430,893,392,115,16]
+                    }
+                ]
+
+            };
+            var escoresPadronizadoshis = ["189,17","228,92","268,66","308,41","348,16","387,90","427,65","467,39","507,14","546,88","586,63","626,38","666,12","705,87","745,61","785,36"];
+                        	            var barChartDatageo = {
+                labels: ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"],
+                datasets: [
+                    {
+                        fillColor: "#9BC778",
+                        strokeColor: "#9BC778",
+                        highlightFill: "#E6244D",
+                        highlightStroke: "#E6244D",
+                        data: [27,141,424,876,1352,1968,2362,2652,2613,2212,1838,1208,671,274,72,10]
+                    }
+                ]
+
+            };
+            var escoresPadronizadosgeo = ["222,08","260,05","298,03","336,01","373,98","411,96","449,94","487,91","525,89","563,87","601,84","639,82","677,80","715,77","753,75","791,72"];
+                        	            var barChartDatamat = {
+                labels: ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"],
+                datasets: [
+                    {
+                        fillColor: "#9BC778",
+                        strokeColor: "#9BC778",
+                        highlightFill: "#E6244D",
+                        highlightStroke: "#E6244D",
+                        data: [165,743,1648,2706,2551,2175,1757,1540,1267,1108,915,724,599,425,189,188]
+                    }
+                ]
+
+            };
+            var escoresPadronizadosmat = ["323,00","353,10","383,20","413,30","443,40","473,50","503,61","533,71","563,81","593,91","624,01","654,11","684,21","714,32","744,42","774,52"];
+                        	            var barChartDataing = {
+                labels: ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"],
+                datasets: [
+                    {
+                        fillColor: "#9BC778",
+                        strokeColor: "#9BC778",
+                        highlightFill: "#E6244D",
+                        highlightStroke: "#E6244D",
+                        data: [74,270,590,953,1143,1297,1435,1588,1590,1379,1162,839,552,257,99,19]
+                    }
+                ]
+
+            };
+            var escoresPadronizadosing = ["267,83","301,00","334,18","367,35","400,53","433,70","466,88","500,05","533,23","566,40","599,58","632,75","665,93","699,10","732,28","765,45"];
+                        	            var barChartDataesp = {
+                labels: ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"],
+                datasets: [
+                    {
+                        fillColor: "#9BC778",
+                        strokeColor: "#9BC778",
+                        highlightFill: "#E6244D",
+                        highlightStroke: "#E6244D",
+                        data: [15,78,226,452,623,704,755,678,572,381,253,145,76,33,4,0]
+                    }
+                ]
+
+            };
+            var escoresPadronizadosesp = ["256,94","296,48","336,03","375,58","415,12","454,67","494,21","533,76","573,31","612,85","652,40","691,94","731,49","771,04","810,58","850,13"];
+                        	            var barChartDataita = {
+                labels: ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"],
+                datasets: [
+                    {
+                        fillColor: "#9BC778",
+                        strokeColor: "#9BC778",
+                        highlightFill: "#E6244D",
+                        highlightStroke: "#E6244D",
+                        data: [0,0,0,3,4,2,2,3,3,4,3,3,5,1,1,0]
+                    }
+                ]
+
+            };
+            var escoresPadronizadosita = ["245,50","276,63","307,75","338,88","370,00","401,13","432,26","463,38","494,51","525,63","556,76","587,88","619,01","650,13","681,26","712,38"];
+                        	            var barChartDatafra = {
+                labels: ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"],
+                datasets: [
+                    {
+                        fillColor: "#9BC778",
+                        strokeColor: "#9BC778",
+                        highlightFill: "#E6244D",
+                        highlightStroke: "#E6244D",
+                        data: [0,1,1,0,1,0,0,1,3,0,2,4,1,2,2,2]
+                    }
+                ]
+
+            };
+            var escoresPadronizadosfra = ["248,46","273,86","299,27","324,68","350,09","375,50","400,91","426,32","451,72","477,13","502,54","527,95","553,36","578,77","604,17","629,58"];
+                        	            var barChartDataale = {
+                labels: ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"],
+                datasets: [
+                    {
+                        fillColor: "#9BC778",
+                        strokeColor: "#9BC778",
+                        highlightFill: "#E6244D",
+                        highlightStroke: "#E6244D",
+                        data: [0,0,3,3,2,3,1,4,5,3,1,0,0,2,0,0]
+                    }
+                ]
+
+            };
+            var escoresPadronizadosale = ["284,72","317,93","351,15","384,36","417,58","450,79","484,01","517,22","550,44","583,65","616,87","650,08","683,30","716,51","749,73","782,94"];
+                        	            var barChartDatafis = {
+                labels: ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"],
+                datasets: [
+                    {
+                        fillColor: "#9BC778",
+                        strokeColor: "#9BC778",
+                        highlightFill: "#E6244D",
+                        highlightStroke: "#E6244D",
+                        data: [159,853,2072,3485,3750,2983,2099,1235,727,393,275,151,94,35,11,1]
+                    }
+                ]
+
+            };
+            var escoresPadronizadosfis = ["296,71","342,07","387,43","432,78","478,14","523,50","568,86","614,22","659,57","704,93","750,29","795,65","841,00","886,36","931,72","977,08"];
+                        	            var barChartDataqui = {
+                labels: ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"],
+                datasets: [
+                    {
+                        fillColor: "#9BC778",
+                        strokeColor: "#9BC778",
+                        highlightFill: "#E6244D",
+                        highlightStroke: "#E6244D",
+                        data: [144,632,1591,3123,3298,2949,2310,1526,999,688,476,300,174,85,21,7]
+                    }
+                ]
+
+            };
+            var escoresPadronizadosqui = ["297,39","337,96","378,54","419,11","459,69","500,26","540,83","581,41","621,98","662,56","703,13","743,71","784,28","824,86","865,43","906,01"];
+                        	            var barChartDatabio = {
+                labels: ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"],
+                datasets: [
+                    {
+                        fillColor: "#9BC778",
+                        strokeColor: "#9BC778",
+                        highlightFill: "#E6244D",
+                        highlightStroke: "#E6244D",
+                        data: [139,683,1599,2641,2890,2600,2241,1717,1217,954,734,456,269,116,57,10]
+                    }
+                ]
+
+            };
+            var escoresPadronizadosbio = ["303,44","340,12","376,80","413,48","450,16","486,84","523,51","560,19","596,87","633,55","670,23","706,91","743,58","780,26","816,94","853,62"];
+                        
+            $(document).ready(function () {
+            	
+            	                var ctxpor = document.getElementById("canvas-por").getContext("2d");
+
+                window.myBar = new Chart(ctxpor).Bar(barChartDatapor, {
+                    responsive: true,
+                    barValueSpacing: 1,
+                    tooltipTemplate: "<%if (label){%><%=value%> candidatos acertaram <%}%><%= label %> questões <br> e tiveram escore padronizado de <%= escoresPadronizadospor[label] %>",
+                });
+                                var ctxlit = document.getElementById("canvas-lit").getContext("2d");
+
+                window.myBar = new Chart(ctxlit).Bar(barChartDatalit, {
+                    responsive: true,
+                    barValueSpacing: 1,
+                    tooltipTemplate: "<%if (label){%><%=value%> candidatos acertaram <%}%><%= label %> questões <br> e tiveram escore padronizado de <%= escoresPadronizadoslit[label] %>",
+                });
+                                var ctxhis = document.getElementById("canvas-his").getContext("2d");
+
+                window.myBar = new Chart(ctxhis).Bar(barChartDatahis, {
+                    responsive: true,
+                    barValueSpacing: 1,
+                    tooltipTemplate: "<%if (label){%><%=value%> candidatos acertaram <%}%><%= label %> questões <br> e tiveram escore padronizado de <%= escoresPadronizadoshis[label] %>",
+                });
+                                var ctxgeo = document.getElementById("canvas-geo").getContext("2d");
+
+                window.myBar = new Chart(ctxgeo).Bar(barChartDatageo, {
+                    responsive: true,
+                    barValueSpacing: 1,
+                    tooltipTemplate: "<%if (label){%><%=value%> candidatos acertaram <%}%><%= label %> questões <br> e tiveram escore padronizado de <%= escoresPadronizadosgeo[label] %>",
+                });
+                                var ctxmat = document.getElementById("canvas-mat").getContext("2d");
+
+                window.myBar = new Chart(ctxmat).Bar(barChartDatamat, {
+                    responsive: true,
+                    barValueSpacing: 1,
+                    tooltipTemplate: "<%if (label){%><%=value%> candidatos acertaram <%}%><%= label %> questões <br> e tiveram escore padronizado de <%= escoresPadronizadosmat[label] %>",
+                });
+                                var ctxing = document.getElementById("canvas-ing").getContext("2d");
+
+                window.myBar = new Chart(ctxing).Bar(barChartDataing, {
+                    responsive: true,
+                    barValueSpacing: 1,
+                    tooltipTemplate: "<%if (label){%><%=value%> candidatos acertaram <%}%><%= label %> questões <br> e tiveram escore padronizado de <%= escoresPadronizadosing[label] %>",
+                });
+                                var ctxesp = document.getElementById("canvas-esp").getContext("2d");
+
+                window.myBar = new Chart(ctxesp).Bar(barChartDataesp, {
+                    responsive: true,
+                    barValueSpacing: 1,
+                    tooltipTemplate: "<%if (label){%><%=value%> candidatos acertaram <%}%><%= label %> questões <br> e tiveram escore padronizado de <%= escoresPadronizadosesp[label] %>",
+                });
+                                var ctxita = document.getElementById("canvas-ita").getContext("2d");
+
+                window.myBar = new Chart(ctxita).Bar(barChartDataita, {
+                    responsive: true,
+                    barValueSpacing: 1,
+                    tooltipTemplate: "<%if (label){%><%=value%> candidatos acertaram <%}%><%= label %> questões <br> e tiveram escore padronizado de <%= escoresPadronizadosita[label] %>",
+                });
+                                var ctxfra = document.getElementById("canvas-fra").getContext("2d");
+
+                window.myBar = new Chart(ctxfra).Bar(barChartDatafra, {
+                    responsive: true,
+                    barValueSpacing: 1,
+                    tooltipTemplate: "<%if (label){%><%=value%> candidatos acertaram <%}%><%= label %> questões <br> e tiveram escore padronizado de <%= escoresPadronizadosfra[label] %>",
+                });
+                                var ctxale = document.getElementById("canvas-ale").getContext("2d");
+
+                window.myBar = new Chart(ctxale).Bar(barChartDataale, {
+                    responsive: true,
+                    barValueSpacing: 1,
+                    tooltipTemplate: "<%if (label){%><%=value%> candidatos acertaram <%}%><%= label %> questões <br> e tiveram escore padronizado de <%= escoresPadronizadosale[label] %>",
+                });
+                                var ctxfis = document.getElementById("canvas-fis").getContext("2d");
+
+                window.myBar = new Chart(ctxfis).Bar(barChartDatafis, {
+                    responsive: true,
+                    barValueSpacing: 1,
+                    tooltipTemplate: "<%if (label){%><%=value%> candidatos acertaram <%}%><%= label %> questões <br> e tiveram escore padronizado de <%= escoresPadronizadosfis[label] %>",
+                });
+                                var ctxqui = document.getElementById("canvas-qui").getContext("2d");
+
+                window.myBar = new Chart(ctxqui).Bar(barChartDataqui, {
+                    responsive: true,
+                    barValueSpacing: 1,
+                    tooltipTemplate: "<%if (label){%><%=value%> candidatos acertaram <%}%><%= label %> questões <br> e tiveram escore padronizado de <%= escoresPadronizadosqui[label] %>",
+                });
+                                var ctxbio = document.getElementById("canvas-bio").getContext("2d");
+
+                window.myBar = new Chart(ctxbio).Bar(barChartDatabio, {
+                    responsive: true,
+                    barValueSpacing: 1,
+                    tooltipTemplate: "<%if (label){%><%=value%> candidatos acertaram <%}%><%= label %> questões <br> e tiveram escore padronizado de <%= escoresPadronizadosbio[label] %>",
+                });
+                
+            });
+
+            
+        </script>
+
+    </head>
+    <body id="histograma">
+        <div id="barra-ufrgs">
+            <div class="wrapper-size">
+                <ul>
+                    <li><a href="http://www.ufrgs.br">UFRGS </a></li>
+                    <li><a href="http://portaldocandidato.ufrgs.br">Portal do Candidato</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <header class="hide-on-med-and-down">
+            <div class="container row">
+                <div class="imagem col s9" id="logo" >
+                    <picture>	
+                        <source srcset="../img/logo.png">
+                        <img src="../img/logo.png" alt="Vestibular 2025 UFRGS">
+                    </picture>
+                </div>											
+                <div id="ilustra" class="imagem col s3">
+                </div>
+            </div>
+        </header>
+
+        <nav id="menu-horizontal">
+            <div class="nav-wrapper container row">
+                <div class="col s12 m9">
+                    <a href="#" class="brand-logo left hide-on-large-only">Vestibular 2025</a>
+                    <a href="#" data-activates="mobile-menu" class="button-collapse"><i class="material-icons">menu</i></a>
+                    <ul id="nav-mobile" class="hide-on-med-and-down">
+                        <li><a href="../gabaritos/"  id="gabaritos">Gabaritos</a></li>
+                        <li class="active"><a href="../histogramas/" id="histogramas">Histogramas</a></li>
+                        <!-- <li><a href="../densidade/" id="densidade">Densidade</a></li> -->
+                        <!-- <li><a href="../medias/" id="medias">Médias</a></li> -->
+                    </ul>
+                </div>
+                <div class="col m3 hide-on-med-and-down">
+                    <ul>
+                         <li id="listao"   ><a href="../listao/" id="lista_aprovados">Listão</a></li> 
+                    </ul>
+                </div>
+                <ul class="side-nav collapsible hide-on-med-and-up" id="mobile-menu" data-collapsible="expandable">
+                    <li><a href="../gabaritos/">Gabaritos</a></li>    
+                    <li class="active"><a href="#" class=" collapsible-header">Histogramas</a>
+                        <div class="collapsible-body">
+                            <ul>      
+                            	                                	<li><a href="#por">Língua Portuguesa</a></li>
+                            	                                	<li><a href="#lit">Literatura em Língua Portuguesa</a></li>
+                            	                                	<li><a href="#his">História</a></li>
+                            	                                	<li><a href="#geo">Geografia</a></li>
+                            	                                	<li><a href="#mat">Matemática</a></li>
+                            	                                	<li><a href="#ing">Inglês</a></li>
+                            	                                	<li><a href="#esp">Espanhol</a></li>
+                            	                                	<li><a href="#ita">Italiano</a></li>
+                            	                                	<li><a href="#fra">Francês</a></li>
+                            	                                	<li><a href="#ale">Alemão</a></li>
+                            	                                	<li><a href="#fis">Física</a></li>
+                            	                                	<li><a href="#qui">Química</a></li>
+                            	                                	<li><a href="#bio">Biologia</a></li>
+                            	                            </ul>  
+                        </div> 
+                    </li>
+                    <!-- <li><a href="../listao/">Densidade</a></li> -->
+                    <!-- <li><a href="../listao/">Médias</a></li> -->
+                     <li><a href="../listao/">Listão</a></li> 
+                </ul>
+            </div>
+        </nav>
+        <div class="container row">	
+            <h2>Histogramas</h2>
+           
+            <div class="col l9 s12">	
+	            	                <h3 id="por">Língua Portuguesa</h3> 
+                                            <h4></h4>               
+                    	                <div class="histograma">
+	                    <div id="chartjs-tooltip"></div>
+	                    <canvas id="canvas-por"></canvas>
+	                </div>
+	                <div class="row">                    
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead>
+	                                <tr>
+	                                    <th>Escore</th>
+	                                    <th>Escore padronizado</th>
+	                                    <th>Frequência</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                            		                                	<tr><td>0</td>
+	                                	<td>208,96</td>
+	                                	<td>18</td></tr> 
+	                            		                                	<tr><td>1</td>
+	                                	<td>245,02</td>
+	                                	<td>70</td></tr> 
+	                            		                                	<tr><td>2</td>
+	                                	<td>281,08</td>
+	                                	<td>231</td></tr> 
+	                            		                                	<tr><td>3</td>
+	                                	<td>317,14</td>
+	                                	<td>517</td></tr> 
+	                            		                                	<tr><td>4</td>
+	                                	<td>353,19</td>
+	                                	<td>1065</td></tr> 
+	                            		                                	<tr><td>5</td>
+	                                	<td>389,25</td>
+	                                	<td>1641</td></tr> 
+	                            		                                	<tr><td>6</td>
+	                                	<td>425,31</td>
+	                                	<td>2074</td></tr> 
+	                            		                                	<tr><td>7</td>
+	                                	<td>461,37</td>
+	                                	<td>2393</td></tr> 
+	                            		                                	<tr><td>8</td>
+	                                	<td>497,43</td>
+	                                	<td>2510</td></tr> 
+	                            		                                	<tr><td>9</td>
+	                                	<td>533,49</td>
+	                                	<td>2333</td></tr> 
+	                            		                                	<tr><td>10</td>
+	                                	<td>569,55</td>
+	                                	<td>2011</td></tr> 
+	                            		                                	<tr><td>11</td>
+	                                	<td>605,61</td>
+	                                	<td>1577</td></tr> 
+	                            		                                	<tr><td>12</td>
+	                                	<td>641,67</td>
+	                                	<td>1179</td></tr> 
+	                            		                                	<tr><td>13</td>
+	                                	<td>677,73</td>
+	                                	<td>700</td></tr> 
+	                            		                                	<tr><td>14</td>
+	                                	<td>713,79</td>
+	                                	<td>309</td></tr> 
+	                            		                                	<tr><td>15</td>
+	                                	<td>749,85</td>
+	                                	<td>72</td></tr> 
+	                            		                            </tbody>
+	                        </table>
+	                    </div>
+
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead><tr><th colspan="2">Língua Portuguesa</th></tr></thead>
+	                            <tbody>
+	                                <tr>
+	                                    <td>Soma Global dos Escores</td>
+	                                    <td class="num"><b>150.931</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Média da Prova</td>
+	                                    <td class="num"><b>8,0712</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Desvio Padrão da Prova</td>
+	                                    <td class="num"><b>2,7732</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Presentes</td>
+	                                    <td class="num"><b>18.700</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Ausentes</td>
+	                                    <td class="num"><b>2.984</b> (13,76%)</td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                </div>
+
+	            	                <h3 id="lit">Literatura em Língua Portuguesa</h3> 
+                                            <h4></h4>               
+                    	                <div class="histograma">
+	                    <div id="chartjs-tooltip"></div>
+	                    <canvas id="canvas-lit"></canvas>
+	                </div>
+	                <div class="row">                    
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead>
+	                                <tr>
+	                                    <th>Escore</th>
+	                                    <th>Escore padronizado</th>
+	                                    <th>Frequência</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                            		                                	<tr><td>0</td>
+	                                	<td>188,37</td>
+	                                	<td>22</td></tr> 
+	                            		                                	<tr><td>1</td>
+	                                	<td>227,05</td>
+	                                	<td>67</td></tr> 
+	                            		                                	<tr><td>2</td>
+	                                	<td>265,73</td>
+	                                	<td>209</td></tr> 
+	                            		                                	<tr><td>3</td>
+	                                	<td>304,41</td>
+	                                	<td>503</td></tr> 
+	                            		                                	<tr><td>4</td>
+	                                	<td>343,08</td>
+	                                	<td>892</td></tr> 
+	                            		                                	<tr><td>5</td>
+	                                	<td>381,76</td>
+	                                	<td>1367</td></tr> 
+	                            		                                	<tr><td>6</td>
+	                                	<td>420,44</td>
+	                                	<td>2084</td></tr> 
+	                            		                                	<tr><td>7</td>
+	                                	<td>459,12</td>
+	                                	<td>2533</td></tr> 
+	                            		                                	<tr><td>8</td>
+	                                	<td>497,80</td>
+	                                	<td>2765</td></tr> 
+	                            		                                	<tr><td>9</td>
+	                                	<td>536,48</td>
+	                                	<td>2650</td></tr> 
+	                            		                                	<tr><td>10</td>
+	                                	<td>575,16</td>
+	                                	<td>2281</td></tr> 
+	                            		                                	<tr><td>11</td>
+	                                	<td>613,84</td>
+	                                	<td>1627</td></tr> 
+	                            		                                	<tr><td>12</td>
+	                                	<td>652,51</td>
+	                                	<td>1007</td></tr> 
+	                            		                                	<tr><td>13</td>
+	                                	<td>691,19</td>
+	                                	<td>475</td></tr> 
+	                            		                                	<tr><td>14</td>
+	                                	<td>729,87</td>
+	                                	<td>174</td></tr> 
+	                            		                                	<tr><td>15</td>
+	                                	<td>768,55</td>
+	                                	<td>44</td></tr> 
+	                            		                            </tbody>
+	                        </table>
+	                    </div>
+
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead><tr><th colspan="2">Literatura em Língua Portuguesa</th></tr></thead>
+	                            <tbody>
+	                                <tr>
+	                                    <td>Soma Global dos Escores</td>
+	                                    <td class="num"><b>150.664</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Média da Prova</td>
+	                                    <td class="num"><b>8,0569</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Desvio Padrão da Prova</td>
+	                                    <td class="num"><b>2,5854</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Presentes</td>
+	                                    <td class="num"><b>18.700</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Ausentes</td>
+	                                    <td class="num"><b>2.984</b> (13,76%)</td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                </div>
+
+	            	                <h3 id="his">História</h3> 
+                                            <h4></h4>               
+                    	                <div class="histograma">
+	                    <div id="chartjs-tooltip"></div>
+	                    <canvas id="canvas-his"></canvas>
+	                </div>
+	                <div class="row">                    
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead>
+	                                <tr>
+	                                    <th>Escore</th>
+	                                    <th>Escore padronizado</th>
+	                                    <th>Frequência</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                            		                                	<tr><td>0</td>
+	                                	<td>189,17</td>
+	                                	<td>11</td></tr> 
+	                            		                                	<tr><td>1</td>
+	                                	<td>228,92</td>
+	                                	<td>55</td></tr> 
+	                            		                                	<tr><td>2</td>
+	                                	<td>268,66</td>
+	                                	<td>195</td></tr> 
+	                            		                                	<tr><td>3</td>
+	                                	<td>308,41</td>
+	                                	<td>480</td></tr> 
+	                            		                                	<tr><td>4</td>
+	                                	<td>348,16</td>
+	                                	<td>1047</td></tr> 
+	                            		                                	<tr><td>5</td>
+	                                	<td>387,90</td>
+	                                	<td>1665</td></tr> 
+	                            		                                	<tr><td>6</td>
+	                                	<td>427,65</td>
+	                                	<td>2363</td></tr> 
+	                            		                                	<tr><td>7</td>
+	                                	<td>467,39</td>
+	                                	<td>2679</td></tr> 
+	                            		                                	<tr><td>8</td>
+	                                	<td>507,14</td>
+	                                	<td>2790</td></tr> 
+	                            		                                	<tr><td>9</td>
+	                                	<td>546,88</td>
+	                                	<td>2490</td></tr> 
+	                            		                                	<tr><td>10</td>
+	                                	<td>586,63</td>
+	                                	<td>2079</td></tr> 
+	                            		                                	<tr><td>11</td>
+	                                	<td>626,38</td>
+	                                	<td>1430</td></tr> 
+	                            		                                	<tr><td>12</td>
+	                                	<td>666,12</td>
+	                                	<td>893</td></tr> 
+	                            		                                	<tr><td>13</td>
+	                                	<td>705,87</td>
+	                                	<td>392</td></tr> 
+	                            		                                	<tr><td>14</td>
+	                                	<td>745,61</td>
+	                                	<td>115</td></tr> 
+	                            		                                	<tr><td>15</td>
+	                                	<td>785,36</td>
+	                                	<td>16</td></tr> 
+	                            		                            </tbody>
+	                        </table>
+	                    </div>
+
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead><tr><th colspan="2">História</th></tr></thead>
+	                            <tbody>
+	                                <tr>
+	                                    <td>Soma Global dos Escores</td>
+	                                    <td class="num"><b>146.241</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Média da Prova</td>
+	                                    <td class="num"><b>7,8204</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Desvio Padrão da Prova</td>
+	                                    <td class="num"><b>2,5160</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Presentes</td>
+	                                    <td class="num"><b>18.700</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Ausentes</td>
+	                                    <td class="num"><b>2.984</b> (13,76%)</td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                </div>
+
+	            	                <h3 id="geo">Geografia</h3> 
+                                            <h4></h4>               
+                    	                <div class="histograma">
+	                    <div id="chartjs-tooltip"></div>
+	                    <canvas id="canvas-geo"></canvas>
+	                </div>
+	                <div class="row">                    
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead>
+	                                <tr>
+	                                    <th>Escore</th>
+	                                    <th>Escore padronizado</th>
+	                                    <th>Frequência</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                            		                                	<tr><td>0</td>
+	                                	<td>222,08</td>
+	                                	<td>27</td></tr> 
+	                            		                                	<tr><td>1</td>
+	                                	<td>260,05</td>
+	                                	<td>141</td></tr> 
+	                            		                                	<tr><td>2</td>
+	                                	<td>298,03</td>
+	                                	<td>424</td></tr> 
+	                            		                                	<tr><td>3</td>
+	                                	<td>336,01</td>
+	                                	<td>876</td></tr> 
+	                            		                                	<tr><td>4</td>
+	                                	<td>373,98</td>
+	                                	<td>1352</td></tr> 
+	                            		                                	<tr><td>5</td>
+	                                	<td>411,96</td>
+	                                	<td>1968</td></tr> 
+	                            		                                	<tr><td>6</td>
+	                                	<td>449,94</td>
+	                                	<td>2362</td></tr> 
+	                            		                                	<tr><td>7</td>
+	                                	<td>487,91</td>
+	                                	<td>2652</td></tr> 
+	                            		                                	<tr><td>8</td>
+	                                	<td>525,89</td>
+	                                	<td>2613</td></tr> 
+	                            		                                	<tr><td>9</td>
+	                                	<td>563,87</td>
+	                                	<td>2212</td></tr> 
+	                            		                                	<tr><td>10</td>
+	                                	<td>601,84</td>
+	                                	<td>1838</td></tr> 
+	                            		                                	<tr><td>11</td>
+	                                	<td>639,82</td>
+	                                	<td>1208</td></tr> 
+	                            		                                	<tr><td>12</td>
+	                                	<td>677,80</td>
+	                                	<td>671</td></tr> 
+	                            		                                	<tr><td>13</td>
+	                                	<td>715,77</td>
+	                                	<td>274</td></tr> 
+	                            		                                	<tr><td>14</td>
+	                                	<td>753,75</td>
+	                                	<td>72</td></tr> 
+	                            		                                	<tr><td>15</td>
+	                                	<td>791,72</td>
+	                                	<td>10</td></tr> 
+	                            		                            </tbody>
+	                        </table>
+	                    </div>
+
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead><tr><th colspan="2">Geografia</th></tr></thead>
+	                            <tbody>
+	                                <tr>
+	                                    <td>Soma Global dos Escores</td>
+	                                    <td class="num"><b>136.853</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Média da Prova</td>
+	                                    <td class="num"><b>7,3183</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Desvio Padrão da Prova</td>
+	                                    <td class="num"><b>2,6332</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Presentes</td>
+	                                    <td class="num"><b>18.700</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Ausentes</td>
+	                                    <td class="num"><b>2.984</b> (13,76%)</td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                </div>
+
+	            	                <h3 id="mat">Matemática</h3> 
+                                            <h4></h4>               
+                    	                <div class="histograma">
+	                    <div id="chartjs-tooltip"></div>
+	                    <canvas id="canvas-mat"></canvas>
+	                </div>
+	                <div class="row">                    
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead>
+	                                <tr>
+	                                    <th>Escore</th>
+	                                    <th>Escore padronizado</th>
+	                                    <th>Frequência</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                            		                                	<tr><td>0</td>
+	                                	<td>323,00</td>
+	                                	<td>165</td></tr> 
+	                            		                                	<tr><td>1</td>
+	                                	<td>353,10</td>
+	                                	<td>743</td></tr> 
+	                            		                                	<tr><td>2</td>
+	                                	<td>383,20</td>
+	                                	<td>1648</td></tr> 
+	                            		                                	<tr><td>3</td>
+	                                	<td>413,30</td>
+	                                	<td>2706</td></tr> 
+	                            		                                	<tr><td>4</td>
+	                                	<td>443,40</td>
+	                                	<td>2551</td></tr> 
+	                            		                                	<tr><td>5</td>
+	                                	<td>473,50</td>
+	                                	<td>2175</td></tr> 
+	                            		                                	<tr><td>6</td>
+	                                	<td>503,61</td>
+	                                	<td>1757</td></tr> 
+	                            		                                	<tr><td>7</td>
+	                                	<td>533,71</td>
+	                                	<td>1540</td></tr> 
+	                            		                                	<tr><td>8</td>
+	                                	<td>563,81</td>
+	                                	<td>1267</td></tr> 
+	                            		                                	<tr><td>9</td>
+	                                	<td>593,91</td>
+	                                	<td>1108</td></tr> 
+	                            		                                	<tr><td>10</td>
+	                                	<td>624,01</td>
+	                                	<td>915</td></tr> 
+	                            		                                	<tr><td>11</td>
+	                                	<td>654,11</td>
+	                                	<td>724</td></tr> 
+	                            		                                	<tr><td>12</td>
+	                                	<td>684,21</td>
+	                                	<td>599</td></tr> 
+	                            		                                	<tr><td>13</td>
+	                                	<td>714,32</td>
+	                                	<td>425</td></tr> 
+	                            		                                	<tr><td>14</td>
+	                                	<td>744,42</td>
+	                                	<td>189</td></tr> 
+	                            		                                	<tr><td>15</td>
+	                                	<td>774,52</td>
+	                                	<td>188</td></tr> 
+	                            		                            </tbody>
+	                        </table>
+	                    </div>
+
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead><tr><th colspan="2">Matemática</th></tr></thead>
+	                            <tbody>
+	                                <tr>
+	                                    <td>Soma Global dos Escores</td>
+	                                    <td class="num"><b>109.959</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Média da Prova</td>
+	                                    <td class="num"><b>5,8802</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Desvio Padrão da Prova</td>
+	                                    <td class="num"><b>3,3221</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Presentes</td>
+	                                    <td class="num"><b>18.700</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Ausentes</td>
+	                                    <td class="num"><b>2.984</b> (13,76%)</td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                </div>
+
+	            	                <h3 id="ing">Inglês</h3> 
+                                            <h4></h4>               
+                    	                <div class="histograma">
+	                    <div id="chartjs-tooltip"></div>
+	                    <canvas id="canvas-ing"></canvas>
+	                </div>
+	                <div class="row">                    
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead>
+	                                <tr>
+	                                    <th>Escore</th>
+	                                    <th>Escore padronizado</th>
+	                                    <th>Frequência</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                            		                                	<tr><td>0</td>
+	                                	<td>267,83</td>
+	                                	<td>74</td></tr> 
+	                            		                                	<tr><td>1</td>
+	                                	<td>301,00</td>
+	                                	<td>270</td></tr> 
+	                            		                                	<tr><td>2</td>
+	                                	<td>334,18</td>
+	                                	<td>590</td></tr> 
+	                            		                                	<tr><td>3</td>
+	                                	<td>367,35</td>
+	                                	<td>953</td></tr> 
+	                            		                                	<tr><td>4</td>
+	                                	<td>400,53</td>
+	                                	<td>1143</td></tr> 
+	                            		                                	<tr><td>5</td>
+	                                	<td>433,70</td>
+	                                	<td>1297</td></tr> 
+	                            		                                	<tr><td>6</td>
+	                                	<td>466,88</td>
+	                                	<td>1435</td></tr> 
+	                            		                                	<tr><td>7</td>
+	                                	<td>500,05</td>
+	                                	<td>1588</td></tr> 
+	                            		                                	<tr><td>8</td>
+	                                	<td>533,23</td>
+	                                	<td>1590</td></tr> 
+	                            		                                	<tr><td>9</td>
+	                                	<td>566,40</td>
+	                                	<td>1379</td></tr> 
+	                            		                                	<tr><td>10</td>
+	                                	<td>599,58</td>
+	                                	<td>1162</td></tr> 
+	                            		                                	<tr><td>11</td>
+	                                	<td>632,75</td>
+	                                	<td>839</td></tr> 
+	                            		                                	<tr><td>12</td>
+	                                	<td>665,93</td>
+	                                	<td>552</td></tr> 
+	                            		                                	<tr><td>13</td>
+	                                	<td>699,10</td>
+	                                	<td>257</td></tr> 
+	                            		                                	<tr><td>14</td>
+	                                	<td>732,28</td>
+	                                	<td>99</td></tr> 
+	                            		                                	<tr><td>15</td>
+	                                	<td>765,45</td>
+	                                	<td>19</td></tr> 
+	                            		                            </tbody>
+	                        </table>
+	                    </div>
+
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead><tr><th colspan="2">Inglês</th></tr></thead>
+	                            <tbody>
+	                                <tr>
+	                                    <td>Soma Global dos Escores</td>
+	                                    <td class="num"><b>92.708</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Média da Prova</td>
+	                                    <td class="num"><b>6,9984</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Desvio Padrão da Prova</td>
+	                                    <td class="num"><b>3,0143</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Presentes</td>
+	                                    <td class="num"><b>13.247</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Ausentes</td>
+	                                    <td class="num"><b>2.258</b> (14,56%)</td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                </div>
+
+	            	                <h3 id="esp">Espanhol</h3> 
+                                            <h4></h4>               
+                    	                <div class="histograma">
+	                    <div id="chartjs-tooltip"></div>
+	                    <canvas id="canvas-esp"></canvas>
+	                </div>
+	                <div class="row">                    
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead>
+	                                <tr>
+	                                    <th>Escore</th>
+	                                    <th>Escore padronizado</th>
+	                                    <th>Frequência</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                            		                                	<tr><td>0</td>
+	                                	<td>256,94</td>
+	                                	<td>15</td></tr> 
+	                            		                                	<tr><td>1</td>
+	                                	<td>296,48</td>
+	                                	<td>78</td></tr> 
+	                            		                                	<tr><td>2</td>
+	                                	<td>336,03</td>
+	                                	<td>226</td></tr> 
+	                            		                                	<tr><td>3</td>
+	                                	<td>375,58</td>
+	                                	<td>452</td></tr> 
+	                            		                                	<tr><td>4</td>
+	                                	<td>415,12</td>
+	                                	<td>623</td></tr> 
+	                            		                                	<tr><td>5</td>
+	                                	<td>454,67</td>
+	                                	<td>704</td></tr> 
+	                            		                                	<tr><td>6</td>
+	                                	<td>494,21</td>
+	                                	<td>755</td></tr> 
+	                            		                                	<tr><td>7</td>
+	                                	<td>533,76</td>
+	                                	<td>678</td></tr> 
+	                            		                                	<tr><td>8</td>
+	                                	<td>573,31</td>
+	                                	<td>572</td></tr> 
+	                            		                                	<tr><td>9</td>
+	                                	<td>612,85</td>
+	                                	<td>381</td></tr> 
+	                            		                                	<tr><td>10</td>
+	                                	<td>652,40</td>
+	                                	<td>253</td></tr> 
+	                            		                                	<tr><td>11</td>
+	                                	<td>691,94</td>
+	                                	<td>145</td></tr> 
+	                            		                                	<tr><td>12</td>
+	                                	<td>731,49</td>
+	                                	<td>76</td></tr> 
+	                            		                                	<tr><td>13</td>
+	                                	<td>771,04</td>
+	                                	<td>33</td></tr> 
+	                            		                                	<tr><td>14</td>
+	                                	<td>810,58</td>
+	                                	<td>4</td></tr> 
+	                            		                                	<tr><td>15</td>
+	                                	<td>850,13</td>
+	                                	<td>0</td></tr> 
+	                            		                            </tbody>
+	                        </table>
+	                    </div>
+
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead><tr><th colspan="2">Espanhol</th></tr></thead>
+	                            <tbody>
+	                                <tr>
+	                                    <td>Soma Global dos Escores</td>
+	                                    <td class="num"><b>30.701</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Média da Prova</td>
+	                                    <td class="num"><b>6,1463</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Desvio Padrão da Prova</td>
+	                                    <td class="num"><b>2,5287</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Presentes</td>
+	                                    <td class="num"><b>4.995</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Ausentes</td>
+	                                    <td class="num"><b>1.088</b> (17,89%)</td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                </div>
+
+	            	                <h3 id="ita">Italiano</h3> 
+                                            <h4></h4>               
+                    	                <div class="histograma">
+	                    <div id="chartjs-tooltip"></div>
+	                    <canvas id="canvas-ita"></canvas>
+	                </div>
+	                <div class="row">                    
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead>
+	                                <tr>
+	                                    <th>Escore</th>
+	                                    <th>Escore padronizado</th>
+	                                    <th>Frequência</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                            		                                	<tr><td>0</td>
+	                                	<td>245,50</td>
+	                                	<td>0</td></tr> 
+	                            		                                	<tr><td>1</td>
+	                                	<td>276,63</td>
+	                                	<td>0</td></tr> 
+	                            		                                	<tr><td>2</td>
+	                                	<td>307,75</td>
+	                                	<td>0</td></tr> 
+	                            		                                	<tr><td>3</td>
+	                                	<td>338,88</td>
+	                                	<td>3</td></tr> 
+	                            		                                	<tr><td>4</td>
+	                                	<td>370,00</td>
+	                                	<td>4</td></tr> 
+	                            		                                	<tr><td>5</td>
+	                                	<td>401,13</td>
+	                                	<td>2</td></tr> 
+	                            		                                	<tr><td>6</td>
+	                                	<td>432,26</td>
+	                                	<td>2</td></tr> 
+	                            		                                	<tr><td>7</td>
+	                                	<td>463,38</td>
+	                                	<td>3</td></tr> 
+	                            		                                	<tr><td>8</td>
+	                                	<td>494,51</td>
+	                                	<td>3</td></tr> 
+	                            		                                	<tr><td>9</td>
+	                                	<td>525,63</td>
+	                                	<td>4</td></tr> 
+	                            		                                	<tr><td>10</td>
+	                                	<td>556,76</td>
+	                                	<td>3</td></tr> 
+	                            		                                	<tr><td>11</td>
+	                                	<td>587,88</td>
+	                                	<td>3</td></tr> 
+	                            		                                	<tr><td>12</td>
+	                                	<td>619,01</td>
+	                                	<td>5</td></tr> 
+	                            		                                	<tr><td>13</td>
+	                                	<td>650,13</td>
+	                                	<td>1</td></tr> 
+	                            		                                	<tr><td>14</td>
+	                                	<td>681,26</td>
+	                                	<td>1</td></tr> 
+	                            		                                	<tr><td>15</td>
+	                                	<td>712,38</td>
+	                                	<td>0</td></tr> 
+	                            		                            </tbody>
+	                        </table>
+	                    </div>
+
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead><tr><th colspan="2">Italiano</th></tr></thead>
+	                            <tbody>
+	                                <tr>
+	                                    <td>Soma Global dos Escores</td>
+	                                    <td class="num"><b>278</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Média da Prova</td>
+	                                    <td class="num"><b>8,1765</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Desvio Padrão da Prova</td>
+	                                    <td class="num"><b>3,2128</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Presentes</td>
+	                                    <td class="num"><b>34</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Ausentes</td>
+	                                    <td class="num"><b>6</b> (15,00%)</td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                </div>
+
+	            	                <h3 id="fra">Francês</h3> 
+                                            <h4></h4>               
+                    	                <div class="histograma">
+	                    <div id="chartjs-tooltip"></div>
+	                    <canvas id="canvas-fra"></canvas>
+	                </div>
+	                <div class="row">                    
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead>
+	                                <tr>
+	                                    <th>Escore</th>
+	                                    <th>Escore padronizado</th>
+	                                    <th>Frequência</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                            		                                	<tr><td>0</td>
+	                                	<td>248,46</td>
+	                                	<td>0</td></tr> 
+	                            		                                	<tr><td>1</td>
+	                                	<td>273,86</td>
+	                                	<td>1</td></tr> 
+	                            		                                	<tr><td>2</td>
+	                                	<td>299,27</td>
+	                                	<td>1</td></tr> 
+	                            		                                	<tr><td>3</td>
+	                                	<td>324,68</td>
+	                                	<td>0</td></tr> 
+	                            		                                	<tr><td>4</td>
+	                                	<td>350,09</td>
+	                                	<td>1</td></tr> 
+	                            		                                	<tr><td>5</td>
+	                                	<td>375,50</td>
+	                                	<td>0</td></tr> 
+	                            		                                	<tr><td>6</td>
+	                                	<td>400,91</td>
+	                                	<td>0</td></tr> 
+	                            		                                	<tr><td>7</td>
+	                                	<td>426,32</td>
+	                                	<td>1</td></tr> 
+	                            		                                	<tr><td>8</td>
+	                                	<td>451,72</td>
+	                                	<td>3</td></tr> 
+	                            		                                	<tr><td>9</td>
+	                                	<td>477,13</td>
+	                                	<td>0</td></tr> 
+	                            		                                	<tr><td>10</td>
+	                                	<td>502,54</td>
+	                                	<td>2</td></tr> 
+	                            		                                	<tr><td>11</td>
+	                                	<td>527,95</td>
+	                                	<td>4</td></tr> 
+	                            		                                	<tr><td>12</td>
+	                                	<td>553,36</td>
+	                                	<td>1</td></tr> 
+	                            		                                	<tr><td>13</td>
+	                                	<td>578,77</td>
+	                                	<td>2</td></tr> 
+	                            		                                	<tr><td>14</td>
+	                                	<td>604,17</td>
+	                                	<td>2</td></tr> 
+	                            		                                	<tr><td>15</td>
+	                                	<td>629,58</td>
+	                                	<td>2</td></tr> 
+	                            		                            </tbody>
+	                        </table>
+	                    </div>
+
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead><tr><th colspan="2">Francês</th></tr></thead>
+	                            <tbody>
+	                                <tr>
+	                                    <td>Soma Global dos Escores</td>
+	                                    <td class="num"><b>198</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Média da Prova</td>
+	                                    <td class="num"><b>9,9000</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Desvio Padrão da Prova</td>
+	                                    <td class="num"><b>3,9357</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Presentes</td>
+	                                    <td class="num"><b>20</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Ausentes</td>
+	                                    <td class="num"><b>5</b> (20,00%)</td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                </div>
+
+	            	                <h3 id="ale">Alemão</h3> 
+                                            <h4></h4>               
+                    	                <div class="histograma">
+	                    <div id="chartjs-tooltip"></div>
+	                    <canvas id="canvas-ale"></canvas>
+	                </div>
+	                <div class="row">                    
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead>
+	                                <tr>
+	                                    <th>Escore</th>
+	                                    <th>Escore padronizado</th>
+	                                    <th>Frequência</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                            		                                	<tr><td>0</td>
+	                                	<td>284,72</td>
+	                                	<td>0</td></tr> 
+	                            		                                	<tr><td>1</td>
+	                                	<td>317,93</td>
+	                                	<td>0</td></tr> 
+	                            		                                	<tr><td>2</td>
+	                                	<td>351,15</td>
+	                                	<td>3</td></tr> 
+	                            		                                	<tr><td>3</td>
+	                                	<td>384,36</td>
+	                                	<td>3</td></tr> 
+	                            		                                	<tr><td>4</td>
+	                                	<td>417,58</td>
+	                                	<td>2</td></tr> 
+	                            		                                	<tr><td>5</td>
+	                                	<td>450,79</td>
+	                                	<td>3</td></tr> 
+	                            		                                	<tr><td>6</td>
+	                                	<td>484,01</td>
+	                                	<td>1</td></tr> 
+	                            		                                	<tr><td>7</td>
+	                                	<td>517,22</td>
+	                                	<td>4</td></tr> 
+	                            		                                	<tr><td>8</td>
+	                                	<td>550,44</td>
+	                                	<td>5</td></tr> 
+	                            		                                	<tr><td>9</td>
+	                                	<td>583,65</td>
+	                                	<td>3</td></tr> 
+	                            		                                	<tr><td>10</td>
+	                                	<td>616,87</td>
+	                                	<td>1</td></tr> 
+	                            		                                	<tr><td>11</td>
+	                                	<td>650,08</td>
+	                                	<td>0</td></tr> 
+	                            		                                	<tr><td>12</td>
+	                                	<td>683,30</td>
+	                                	<td>0</td></tr> 
+	                            		                                	<tr><td>13</td>
+	                                	<td>716,51</td>
+	                                	<td>2</td></tr> 
+	                            		                                	<tr><td>14</td>
+	                                	<td>749,73</td>
+	                                	<td>0</td></tr> 
+	                            		                                	<tr><td>15</td>
+	                                	<td>782,94</td>
+	                                	<td>0</td></tr> 
+	                            		                            </tbody>
+	                        </table>
+	                    </div>
+
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead><tr><th colspan="2">Alemão</th></tr></thead>
+	                            <tbody>
+	                                <tr>
+	                                    <td>Soma Global dos Escores</td>
+	                                    <td class="num"><b>175</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Média da Prova</td>
+	                                    <td class="num"><b>6,4815</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Desvio Padrão da Prova</td>
+	                                    <td class="num"><b>3,0107</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Presentes</td>
+	                                    <td class="num"><b>27</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Ausentes</td>
+	                                    <td class="num"><b>4</b> (12,90%)</td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                </div>
+
+	            	                <h3 id="fis">Física</h3> 
+                                            <h4></h4>               
+                    	                <div class="histograma">
+	                    <div id="chartjs-tooltip"></div>
+	                    <canvas id="canvas-fis"></canvas>
+	                </div>
+	                <div class="row">                    
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead>
+	                                <tr>
+	                                    <th>Escore</th>
+	                                    <th>Escore padronizado</th>
+	                                    <th>Frequência</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                            		                                	<tr><td>0</td>
+	                                	<td>296,71</td>
+	                                	<td>159</td></tr> 
+	                            		                                	<tr><td>1</td>
+	                                	<td>342,07</td>
+	                                	<td>853</td></tr> 
+	                            		                                	<tr><td>2</td>
+	                                	<td>387,43</td>
+	                                	<td>2072</td></tr> 
+	                            		                                	<tr><td>3</td>
+	                                	<td>432,78</td>
+	                                	<td>3485</td></tr> 
+	                            		                                	<tr><td>4</td>
+	                                	<td>478,14</td>
+	                                	<td>3750</td></tr> 
+	                            		                                	<tr><td>5</td>
+	                                	<td>523,50</td>
+	                                	<td>2983</td></tr> 
+	                            		                                	<tr><td>6</td>
+	                                	<td>568,86</td>
+	                                	<td>2099</td></tr> 
+	                            		                                	<tr><td>7</td>
+	                                	<td>614,22</td>
+	                                	<td>1235</td></tr> 
+	                            		                                	<tr><td>8</td>
+	                                	<td>659,57</td>
+	                                	<td>727</td></tr> 
+	                            		                                	<tr><td>9</td>
+	                                	<td>704,93</td>
+	                                	<td>393</td></tr> 
+	                            		                                	<tr><td>10</td>
+	                                	<td>750,29</td>
+	                                	<td>275</td></tr> 
+	                            		                                	<tr><td>11</td>
+	                                	<td>795,65</td>
+	                                	<td>151</td></tr> 
+	                            		                                	<tr><td>12</td>
+	                                	<td>841,00</td>
+	                                	<td>94</td></tr> 
+	                            		                                	<tr><td>13</td>
+	                                	<td>886,36</td>
+	                                	<td>35</td></tr> 
+	                            		                                	<tr><td>14</td>
+	                                	<td>931,72</td>
+	                                	<td>11</td></tr> 
+	                            		                                	<tr><td>15</td>
+	                                	<td>977,08</td>
+	                                	<td>1</td></tr> 
+	                            		                            </tbody>
+	                        </table>
+	                    </div>
+
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead><tr><th colspan="2">Física</th></tr></thead>
+	                            <tbody>
+	                                <tr>
+	                                    <td>Soma Global dos Escores</td>
+	                                    <td class="num"><b>82.122</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Média da Prova</td>
+	                                    <td class="num"><b>4,4819</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Desvio Padrão da Prova</td>
+	                                    <td class="num"><b>2,2047</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Presentes</td>
+	                                    <td class="num"><b>18.323</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Ausentes</td>
+	                                    <td class="num"><b>3.361</b> (15,50%)</td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                </div>
+
+	            	                <h3 id="qui">Química</h3> 
+                                            <h4></h4>               
+                    	                <div class="histograma">
+	                    <div id="chartjs-tooltip"></div>
+	                    <canvas id="canvas-qui"></canvas>
+	                </div>
+	                <div class="row">                    
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead>
+	                                <tr>
+	                                    <th>Escore</th>
+	                                    <th>Escore padronizado</th>
+	                                    <th>Frequência</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                            		                                	<tr><td>0</td>
+	                                	<td>297,39</td>
+	                                	<td>144</td></tr> 
+	                            		                                	<tr><td>1</td>
+	                                	<td>337,96</td>
+	                                	<td>632</td></tr> 
+	                            		                                	<tr><td>2</td>
+	                                	<td>378,54</td>
+	                                	<td>1591</td></tr> 
+	                            		                                	<tr><td>3</td>
+	                                	<td>419,11</td>
+	                                	<td>3123</td></tr> 
+	                            		                                	<tr><td>4</td>
+	                                	<td>459,69</td>
+	                                	<td>3298</td></tr> 
+	                            		                                	<tr><td>5</td>
+	                                	<td>500,26</td>
+	                                	<td>2949</td></tr> 
+	                            		                                	<tr><td>6</td>
+	                                	<td>540,83</td>
+	                                	<td>2310</td></tr> 
+	                            		                                	<tr><td>7</td>
+	                                	<td>581,41</td>
+	                                	<td>1526</td></tr> 
+	                            		                                	<tr><td>8</td>
+	                                	<td>621,98</td>
+	                                	<td>999</td></tr> 
+	                            		                                	<tr><td>9</td>
+	                                	<td>662,56</td>
+	                                	<td>688</td></tr> 
+	                            		                                	<tr><td>10</td>
+	                                	<td>703,13</td>
+	                                	<td>476</td></tr> 
+	                            		                                	<tr><td>11</td>
+	                                	<td>743,71</td>
+	                                	<td>300</td></tr> 
+	                            		                                	<tr><td>12</td>
+	                                	<td>784,28</td>
+	                                	<td>174</td></tr> 
+	                            		                                	<tr><td>13</td>
+	                                	<td>824,86</td>
+	                                	<td>85</td></tr> 
+	                            		                                	<tr><td>14</td>
+	                                	<td>865,43</td>
+	                                	<td>21</td></tr> 
+	                            		                                	<tr><td>15</td>
+	                                	<td>906,01</td>
+	                                	<td>7</td></tr> 
+	                            		                            </tbody>
+	                        </table>
+	                    </div>
+
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead><tr><th colspan="2">Química</th></tr></thead>
+	                            <tbody>
+	                                <tr>
+	                                    <td>Soma Global dos Escores</td>
+	                                    <td class="num"><b>91.498</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Média da Prova</td>
+	                                    <td class="num"><b>4,9936</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Desvio Padrão da Prova</td>
+	                                    <td class="num"><b>2,4646</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Presentes</td>
+	                                    <td class="num"><b>18.323</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Ausentes</td>
+	                                    <td class="num"><b>3.361</b> (15,50%)</td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                </div>
+
+	            	                <h3 id="bio">Biologia</h3> 
+                                            <h4></h4>               
+                    	                <div class="histograma">
+	                    <div id="chartjs-tooltip"></div>
+	                    <canvas id="canvas-bio"></canvas>
+	                </div>
+	                <div class="row">                    
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead>
+	                                <tr>
+	                                    <th>Escore</th>
+	                                    <th>Escore padronizado</th>
+	                                    <th>Frequência</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                            		                                	<tr><td>0</td>
+	                                	<td>303,44</td>
+	                                	<td>139</td></tr> 
+	                            		                                	<tr><td>1</td>
+	                                	<td>340,12</td>
+	                                	<td>683</td></tr> 
+	                            		                                	<tr><td>2</td>
+	                                	<td>376,80</td>
+	                                	<td>1599</td></tr> 
+	                            		                                	<tr><td>3</td>
+	                                	<td>413,48</td>
+	                                	<td>2641</td></tr> 
+	                            		                                	<tr><td>4</td>
+	                                	<td>450,16</td>
+	                                	<td>2890</td></tr> 
+	                            		                                	<tr><td>5</td>
+	                                	<td>486,84</td>
+	                                	<td>2600</td></tr> 
+	                            		                                	<tr><td>6</td>
+	                                	<td>523,51</td>
+	                                	<td>2241</td></tr> 
+	                            		                                	<tr><td>7</td>
+	                                	<td>560,19</td>
+	                                	<td>1717</td></tr> 
+	                            		                                	<tr><td>8</td>
+	                                	<td>596,87</td>
+	                                	<td>1217</td></tr> 
+	                            		                                	<tr><td>9</td>
+	                                	<td>633,55</td>
+	                                	<td>954</td></tr> 
+	                            		                                	<tr><td>10</td>
+	                                	<td>670,23</td>
+	                                	<td>734</td></tr> 
+	                            		                                	<tr><td>11</td>
+	                                	<td>706,91</td>
+	                                	<td>456</td></tr> 
+	                            		                                	<tr><td>12</td>
+	                                	<td>743,58</td>
+	                                	<td>269</td></tr> 
+	                            		                                	<tr><td>13</td>
+	                                	<td>780,26</td>
+	                                	<td>116</td></tr> 
+	                            		                                	<tr><td>14</td>
+	                                	<td>816,94</td>
+	                                	<td>57</td></tr> 
+	                            		                                	<tr><td>15</td>
+	                                	<td>853,62</td>
+	                                	<td>10</td></tr> 
+	                            		                            </tbody>
+	                        </table>
+	                    </div>
+
+	                    <div class="col s12 m6">
+	                        <table class="col s12">
+	                            <thead><tr><th colspan="2">Biologia</th></tr></thead>
+	                            <tbody>
+	                                <tr>
+	                                    <td>Soma Global dos Escores</td>
+	                                    <td class="num"><b>98.191</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Média da Prova</td>
+	                                    <td class="num"><b>5,3589</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Desvio Padrão da Prova</td>
+	                                    <td class="num"><b>2,7264</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Presentes</td>
+	                                    <td class="num"><b>18.323</b></td>
+	                                </tr>
+	                                <tr>
+	                                    <td>Número de Candidatos Ausentes</td>
+	                                    <td class="num"><b>3.361</b> (15,50%)</td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                </div>
+
+	                            <hr>
+            </div>
+            
+             <div class="col l3 s12 hide-on-med-and-down">                     
+                <aside>                 
+                    <nav class="menu-lateral nav" style="max-width: 300px;">      
+                        <ul>        
+                        	                            	<li><a href="#por">Língua Portuguesa</a></li>
+                        	                            	<li><a href="#lit">Literatura em Língua Portuguesa</a></li>
+                        	                            	<li><a href="#his">História</a></li>
+                        	                            	<li><a href="#geo">Geografia</a></li>
+                        	                            	<li><a href="#mat">Matemática</a></li>
+                        	                            	<li><a href="#ing">Inglês</a></li>
+                        	                            	<li><a href="#esp">Espanhol</a></li>
+                        	                            	<li><a href="#ita">Italiano</a></li>
+                        	                            	<li><a href="#fra">Francês</a></li>
+                        	                            	<li><a href="#ale">Alemão</a></li>
+                        	                            	<li><a href="#fis">Física</a></li>
+                        	                            	<li><a href="#qui">Química</a></li>
+                        	                            	<li><a href="#bio">Biologia</a></li>
+                        	                        </ul>       
+                    </nav>      
+                </aside>        
+            </div>  
+        </div>
+
+	    <div class="fixed-action-btn horizontal">
+	        <a class="btn-floating btn-large back-to-top hide-on-med-and-down">
+	            <i class="large material-icons">arrow_upward</i>
+	        </a>
+	        <a class="btn-floating back-to-top hide-on-large-only">
+	           <i class="material-icons">arrow_upward</i>
+	        </a>
+	    </div>        
+
+        <footer class="page-footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col l10 s12">
+                        <div class="left">
+                            <a class="grey-text text-lighten-4" href="https://www.ufrgs.br/coperse/concurso-vestibular/"><h5 class="white-text">Concurso Vestibular - 2025</h5></a>
+                            <ul>
+                                <li><a class="grey-text text-lighten-3" href="../gabaritos/">Gabaritos</a></li>
+                                <li><a class="grey-text text-lighten-3" href="../histogramas/">Histogramas</a></li>
+                                 <li><a class="grey-text text-lighten-3" href="../listao/">Listão</a></li>                                 
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col l2">                
+                        <a class="grey-text text-lighten-4" href="http://portaldocandidato.ufrgs.br/"><h6>Portal do Candidato</h6></a>
+                        <a class="grey-text text-lighten-4" href="http://www.ufrgs.br/coperse/"><h6>COPERSE</h6></a>
+                        <a class="grey-text text-lighten-4" href="https://www.ufrgs.br/coperse/concurso-vestibular/"><h6>Site do Concurso Vestibular - 2025</h6></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <div class="container">
+                    <a class="grey-text text-lighten-4" href="http://www.ufrgs.br">UFRGS - Universidade Federal do Rio Grande do Sul</a>
+                </div>
+            </div>
+        </footer>
+        <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-L9HSQQZLW0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-L9HSQQZLW0');
+</script>
+    </body>
+</html>
