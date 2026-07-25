@@ -4,10 +4,8 @@ from selenium.webdriver.support.ui import Select, WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
-from constants import MODE_PATTERNS, INF
+from .constants import ENTRY_MODE_PATTERNS, STATUS_PATTERNS, INF, RANKING_URL
 import re
-
-URL = "https://www1.ufrgs.br/PortalEnsino/GraduacaoProcessoSeletivo/index.php/DivulgacaoDadosChamamento"
 
 
 def create_driver():
@@ -62,12 +60,12 @@ def load_data(driver, wait):
 
 
 # ---------- Extração ----------
-def getRanking(year: str, course: str, exam:str="Vestibular") -> list[list[str]]:
+def get_ranking(year: str, course: str, exam:str="Vestibular") -> list[list[str]]:
     driver = create_driver()
     wait = WebDriverWait(driver, 10)
-    
+
     try:
-        driver.get(URL)
+        driver.get(RANKING_URL)
 
         select_year(driver, wait, year)
         select_exam(driver, wait, exam)
@@ -78,7 +76,7 @@ def getRanking(year: str, course: str, exam:str="Vestibular") -> list[list[str]]
 
     finally:
         driver.quit()
-        
+
     table = soup.find("table", {"class": "tabDados items modelo1"})
 
     if table is None:
@@ -95,10 +93,12 @@ def getRanking(year: str, course: str, exam:str="Vestibular") -> list[list[str]]
     return ranking
 
 
-def getMinAC(ranking: list[list[str]], target_mode: str) -> float:
-    pattern_str = MODE_PATTERNS.get(target_mode)
+def get_min_AC(ranking: list[list[str]], target_mode: str) -> float:
+    pattern_str = ENTRY_MODE_PATTERNS.get(target_mode)
     pattern = re.compile(pattern_str) # type: ignore (vamos filtrar no front para estar em ENTRY_MODES)
-    
+
+    status_pattern = re.compile("|".join(STATUS_PATTERNS.values()))
+
     min_score = INF
 
     for candidate in ranking:
@@ -106,8 +106,8 @@ def getMinAC(ranking: list[list[str]], target_mode: str) -> float:
         entry_mode = candidate[6]  # Vaga de ingresso
         status = candidate[7]  # Situação
 
-        if pattern.search(entry_mode) and status in ["Matriculado", "Lotado em vaga", "Renunciante"]:                    
-                if score < min_score: 
+        if pattern.search(entry_mode) and status_pattern.search(status):
+                if score < min_score:
                     min_score = score
 
     if min_score != INF:
@@ -118,11 +118,11 @@ def getMinAC(ranking: list[list[str]], target_mode: str) -> float:
 
 def main():
     year = "2022"
-    course = "Ciência da Computação - Bacharelado"
+    course = "Ciência da Computação"
     target_mode = "LI_EP"
 
-    ranking = getRanking(year, course)
-    min_score = getMinAC(ranking, target_mode)
+    ranking = get_ranking(year, course)
+    min_score = get_min_AC(ranking, target_mode)
 
     print(f"A nota de corte para {target_mode} é: {min_score}")
 

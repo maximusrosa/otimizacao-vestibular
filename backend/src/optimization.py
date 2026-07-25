@@ -1,6 +1,6 @@
 import pulp
-import utils
-from constants import *
+from . import utils
+from .constants import *
 
 # Objeto de retorno
 class OptimizationResult:
