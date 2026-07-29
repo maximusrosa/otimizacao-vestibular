@@ -17,10 +17,8 @@ from src.optimization import optimization
 
 EXPECTED_LEN = MAX_HITS - MIN_HITS + 1
 
-# Curso/ano conhecidos com dados publicados de chamamento.
-# OBS: o texto do curso muda por ano; em 2022 é sem o sufixo "- Bacharelado".
 LIVE_COURSE = "Ciência da Computação"
-LIVE_YEAR = "2022"
+LIVE_YEAR = "2025"
 
 _has_chrome = any(
     shutil.which(binary)

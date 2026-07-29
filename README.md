@@ -44,14 +44,17 @@ otimizacao-vestibular/
 │   ├── requirements.txt                 # Dependências de runtime
 │   ├── requirements-dev.txt             # + pytest, responses
 │   ├── data/
-│   │   └── course_weights.csv           # Pesos das provas por curso
+│   │   ├── course_weights.csv           # Pesos das provas por curso
+│   │   └── course_mapping.json          # Mapeamento de nomes históricos → nome canônico (gerado)
 │   ├── src/
 │   │   ├── main.py                      # App FastAPI + endpoints (/health, /optimize)
 │   │   ├── optimization.py              # Modelo de PL inteira (PuLP)
 │   │   ├── get_scores.py                # Scraping dos escores padronizados (requests/BS4)
 │   │   ├── get_ranking.py               # Scraping do ranking / AC mínimo (Selenium)
-│   │   ├── utils.py                     # Leitura de pesos + dados do gráfico histórico
-│   │   └── constants.py                 # Constantes (matérias, URLs, modalidades, ...)
+│   │   ├── constants.py                 # Constantes (matérias, URLs, modalidades, ...)
+│   │   └── scripts/
+│   │       ├── course_names_mapping.py  # ETL: scrape nomes → gera course_mapping.json
+│   │       └── utils.py                 # Leitura de pesos + dados do gráfico histórico
 │   └── tests/
 │       ├── conftest.py
 │       ├── fixtures/                    # HTML de exemplo p/ testes de scraping

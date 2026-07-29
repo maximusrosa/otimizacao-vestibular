@@ -1,5 +1,5 @@
 import pulp
-from . import utils
+from .scripts import utils
 from .constants import *
 
 # Objeto de retorno

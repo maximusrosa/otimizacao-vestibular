@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
-from . import utils
+from .scripts import utils
 from .get_scores import get_scores
 from .get_ranking import get_ranking, get_min_AC
 
