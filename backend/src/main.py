@@ -1,5 +1,7 @@
 from .optimization import optimization, OptimizationResult
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
@@ -8,6 +10,14 @@ from .get_scores import get_scores
 from .get_ranking import get_ranking, get_min_AC
 
 app = FastAPI()
+
+@app.exception_handler(RequestValidationError)
+async def _log_validation_error(request: Request, exc: RequestValidationError):
+    body = await request.body()
+    print("=== 422 VALIDATION ERROR ===")
+    print("errors:", exc.errors())
+    print("raw body:", body.decode("utf-8", errors="replace"))
+    return JSONResponse(status_code=422, content={"detail": exc.errors()})
 
 # Configuração do CORS
 origins = [

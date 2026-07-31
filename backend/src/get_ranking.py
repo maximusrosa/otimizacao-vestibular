@@ -5,6 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 from .constants import ENTRY_MODE_PATTERNS, STATUS_PATTERNS, INF, RANKING_URL
+from .scripts.utils import COURSE_MAPPING
 import re
 
 
@@ -42,8 +43,17 @@ def select_course(driver, wait, course: str):
     select_course = Select(dropdown_course)
     wait.until(lambda d: len(select_course.options) > 1)
 
-    #print(f"Foram encontrados {len(select_course.options) - 1} cursos disponíveis.")
-    select_course.select_by_visible_text(course)
+    # O nome do curso no dropdown varia por ano (ex.: "Ciência da Computação"
+    # em 2022 vs. "Ciência da Computação - Bacharelado" em 2025). O front envia
+    # sempre o nome canônico, então resolvemos cada opção pelo COURSE_MAPPING e
+    # escolhemos aquela cujo nome canônico bate com o solicitado.
+    for option in select_course.options:
+        text = option.text.strip()
+        if COURSE_MAPPING.get(text, text) == course:
+            select_course.select_by_visible_text(text)
+            return
+
+    raise RuntimeError(f"Curso não encontrado no dropdown: {course}")
 
 
 # ---------- Carregar Dados ----------

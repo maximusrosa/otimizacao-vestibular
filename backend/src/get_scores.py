@@ -6,8 +6,19 @@ from .constants import (
 
 
 def _parse_float(text: str) -> float:
-    """Converte número em formato brasileiro ('1.234,56') para float."""
-    return float(text.replace(".", "").replace(",", "."))
+    """Converte número em formato brasileiro para float.
+
+    O separador decimal é sempre a vírgula (2 casas); o separador de milhar
+    varia por ano ('.' em 2025, ',' em 2022). Tratamos o último separador como
+    decimal e removemos os demais (agrupamento de milhar).
+    """
+    text = text.strip()
+    last_sep = max(text.rfind("."), text.rfind(","))
+    if last_sep == -1:
+        return float(text)
+    integer = text[:last_sep].replace(".", "").replace(",", "")
+    frac = text[last_sep + 1:]
+    return float(f"{integer}.{frac}")
 
 
 def _parse_std_scores(table) -> dict[int, float]:
