@@ -126,6 +126,8 @@ npm start          # http://localhost:3000
 
 ## Testes
 
+### Backend (pytest)
+
 Os testes unitários (scraping com fixtures HTML) rodam por padrão; os de integração (que acessam o site da UFRGS / abrem um browser real) são marcados com `integration` e desativados por padrão.
 
 ```bash
@@ -137,6 +139,41 @@ PYTHONPATH=. pytest -m integration
 
 # Integração dentro de container (traz o Chrome pronto)
 docker compose -f docker-compose.test.yml up --build --abort-on-container-exit
+```
+
+### Frontend (React Testing Library + Jest)
+
+A partir de `frontend/`:
+
+```bash
+# Roda uma vez (modo CI, sem watch)
+CI=true npm test
+
+# Um arquivo específico
+CI=true npm test -- src/pages/Home/index.test.js
+
+# Modo watch (re-executa ao salvar; padrão)
+npm test
+```
+
+> Sem `CI=true`, o `npm test` entra em **modo watch** e aguarda input. Use `CI=true` para uma execução única (scripts/CI).
+
+### E2E (Playwright)
+
+Requer o stack Docker rodando (`docker compose up -d`). A partir de `frontend/`:
+
+```bash
+# Primeira vez: baixar binários do browser
+npx playwright install chromium
+
+# Roda os testes e2e
+npx playwright test
+
+# Com browser visível
+npx playwright test --headed
+
+# Relatório HTML após a execução
+npx playwright show-report
 ```
 
 ### Rodando os módulos isoladamente
