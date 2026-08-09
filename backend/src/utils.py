@@ -1,35 +1,33 @@
 import json
-from pathlib import Path
-from ..constants import WEIGHTS_PATH
+from .constants import COURSE_WEIGHTS_PATH, COURSE_MAPPING_PATH
 
-# Load the mapping into memory once when the server starts
-MAPPING_PATH = Path("data/course_mapping.json")
-if MAPPING_PATH.exists():
-    with open(MAPPING_PATH, 'r', encoding='utf-8') as f:
-        _data = json.load(f)
-        COURSE_MAPPING = _data.get("mapping", _data)  # backwards-compatible with flat JSON
-else:
-    COURSE_MAPPING = {}
 
-def readCourseWeights(scraped_course: str):
-    # Lookup the normalized base name
-    target_base = COURSE_MAPPING.get(scraped_course, scraped_course)
-    
-    with open(WEIGHTS_PATH, 'r', encoding='utf-8') as f:
+def readCourseWeights(course):
+    with open(COURSE_MAPPING_PATH, 'r', encoding='utf-8') as f:
+        course_mapping = json.load(f)
+    course_mapping = course_mapping["mapping"]
+    # Mapeia o curso se existir no JSON, caso contrário mantém o nome original
+    course = course_mapping.get(course, course)
+
+    with open(COURSE_WEIGHTS_PATH, 'r', encoding='utf-8') as f:
         lines = f.readlines()
         
-        header = lines[0].strip().split(',')
-        subjects = header[1:]
+    # Lê o cabeçalho (primeira linha) para obter os nomes das disciplinas
+    header = lines[0].strip().split(',')
+    subjects = header[1:]  # Ignora a primeira coluna (Curso)
+    
+    # Procura a linha do curso especificado
+    for line in lines[1:]:
+        data = line.strip().split(',')
+        course_name = data[0]
         
-        for line in lines[1:]:
-            data = line.strip().split(',')
-            csv_course = data[0]
-            
-            if csv_course == target_base:
-                weights = data[1:]
-                return {subjects[i]: int(weights[i]) for i in range(len(subjects))}
-        
-        return {}
+        if course_name == course:
+            weights = data[1:]  # Pega os pesos (ignora o nome do curso)
+            # Retorna dicionário {disciplina: peso}
+            return {subjects[i]: int(weights[i]) for i in range(len(subjects))}
+    
+    # Se o curso não for encontrado, retorna dicionário vazio
+    return {}
 
 # Por enquanto notas de corte são constantes, depois fazer um método para tentar obter de cache ou web scraping caso não tenha dados dos anos anteriores para modalidade específica
 # Imaginei os dados de Min_AC como um dicionário aninhado, onde a chave é uma tupla (curso, modalidade) e o valor é outro dicionário que mapeia anos para notas de corte. Exemplo:

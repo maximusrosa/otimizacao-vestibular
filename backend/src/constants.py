@@ -1,10 +1,12 @@
+from pathlib import Path
+
 MIN_HITS = 1
 MAX_HITS = 15
 
 SUBJECTS = ["BIO","FIS","QUI","MAT","HIS","LIT","PORT_RED","LEM","GEO"]
 
-WEIGHTS_PATH = "data/course_weights.csv"
-MAPPING_PATH = "data/course_mapping.json"
+COURSE_WEIGHTS_PATH = str(Path(__file__).resolve().parent.parent / "data" / "course_weights.csv")
+COURSE_MAPPING_PATH = str(Path(__file__).resolve().parent.parent / "data" / "course_mapping.json")
 
 ENTRY_MODES = ["AC", "LI_EP", "LI_PPI", "LB_EP", "LB_PPI", "LI_PCD", "LB_PCD", "LI_Q", "LB_Q"]
 
