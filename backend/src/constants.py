@@ -8,8 +8,6 @@ SUBJECTS = ["BIO","FIS","QUI","MAT","HIS","LIT","PORT_RED","LEM","GEO"]
 COURSE_WEIGHTS_PATH = str(Path(__file__).resolve().parent.parent / "data" / "course_weights.csv")
 COURSE_MAPPING_PATH = str(Path(__file__).resolve().parent.parent / "data" / "course_mapping.json")
 
-ENTRY_MODES = ["AC", "LI_EP", "LI_PPI", "LB_EP", "LB_PPI", "LI_PCD", "LB_PCD", "LI_Q", "LB_Q"]
-
 # Mapeamento de regex para cada modalidade de ingresso
 ENTRY_MODE_PATTERNS = {
     "AC": r"AC",
@@ -22,6 +20,8 @@ ENTRY_MODE_PATTERNS = {
     "LI_Q": r"LI_Q",
     "LB_Q": r"LB_Q"
 }
+
+ENTRY_MODES = list(ENTRY_MODE_PATTERNS.keys())
 
 # Mapeamento de regex para cada situação que conta para a nota de corte
 STATUS_PATTERNS = {
