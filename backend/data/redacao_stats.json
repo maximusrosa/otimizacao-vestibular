@@ -1,0 +1,110 @@
+{
+  "2007": {
+    "mean": 15.4666,
+    "std_dev": 3.06,
+    "corrected_count": 14877,
+    "corrected_percentage": null
+  },
+  "2008": {
+    "mean": 15.1867,
+    "std_dev": 4.0121,
+    "corrected_count": 15024,
+    "corrected_percentage": 50.5
+  },
+  "2009": {
+    "mean": 14.9769,
+    "std_dev": 3.5879,
+    "corrected_count": 14535,
+    "corrected_percentage": 49.7
+  },
+  "2010": {
+    "mean": 14.3835,
+    "std_dev": 3.8092,
+    "corrected_count": 15076,
+    "corrected_percentage": 54.9
+  },
+  "2011": {
+    "mean": 14.2796,
+    "std_dev": 3.7959,
+    "corrected_count": 15212,
+    "corrected_percentage": 51.8
+  },
+  "2012": {
+    "mean": 14.8578,
+    "std_dev": 3.9958,
+    "corrected_count": 15580,
+    "corrected_percentage": 48.5
+  },
+  "2013": {
+    "mean": 14.0968,
+    "std_dev": 4.0012,
+    "corrected_count": 17668,
+    "corrected_percentage": 50.3
+  },
+  "2014": {
+    "mean": 14.2202,
+    "std_dev": 4.0397,
+    "corrected_count": 16786,
+    "corrected_percentage": 51.2
+  },
+  "2015": {
+    "mean": 14.7669,
+    "std_dev": 3.7421,
+    "corrected_count": 13039,
+    "corrected_percentage": 41.5
+  },
+  "2016": {
+    "mean": 15.0922,
+    "std_dev": 3.9981,
+    "corrected_count": 13052,
+    "corrected_percentage": 43.0
+  },
+  "2017": {
+    "mean": 15.1625,
+    "std_dev": 3.8008,
+    "corrected_count": 12402,
+    "corrected_percentage": 45.1
+  },
+  "2018": {
+    "mean": 15.0751,
+    "std_dev": 3.9614,
+    "corrected_count": 12197,
+    "corrected_percentage": 45.6
+  },
+  "2019": {
+    "mean": 14.9004,
+    "std_dev": 3.9387,
+    "corrected_count": 10839,
+    "corrected_percentage": 45.9
+  },
+  "2020": {
+    "mean": 15.997,
+    "std_dev": 3.5603,
+    "corrected_count": 9953,
+    "corrected_percentage": 44.2
+  },
+  "2022": {
+    "mean": 9.8347,
+    "std_dev": 2.2681,
+    "corrected_count": 6046,
+    "corrected_percentage": 47.2
+  },
+  "2023": {
+    "mean": 9.7908,
+    "std_dev": 2.2858,
+    "corrected_count": 8115,
+    "corrected_percentage": 37.07
+  },
+  "2024": {
+    "mean": 9.5815,
+    "std_dev": 2.3696,
+    "corrected_count": 8244,
+    "corrected_percentage": 42.07
+  },
+  "2025": {
+    "mean": 9.9959,
+    "std_dev": 2.328,
+    "corrected_count": 7933,
+    "corrected_percentage": 43.3
+  }
+}

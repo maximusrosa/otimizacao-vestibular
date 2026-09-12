@@ -1,7 +1,8 @@
 import json
 from pathlib import Path
-from ..constants import WEIGHTS_PATH
+#from ..constants import WEIGHTS_PATH
 
+WEIGHTS_PATH = "data/course_weights.csv"
 # Load the mapping into memory once when the server starts
 MAPPING_PATH = Path("data/course_mapping.json")
 if MAPPING_PATH.exists():

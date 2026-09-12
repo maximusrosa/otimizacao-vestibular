@@ -11,6 +11,8 @@ const HomeView = ({
     setLanguage,
     entryMethod,
     setEntryMethod,
+    essayScore,
+    setEssayScore,
     handleOptimize, 
     subjects, 
     handleSubjectChange, 
@@ -59,11 +61,27 @@ const HomeView = ({
                         <button className="clear">×</button>
                     </div>
                 </div>
+                
+                {/* NOVO CAMPO: Nota da Redação */}
+                <div className="field">
+                    <label>Nota da Redação</label>
+                    <div className="select-wrapper">
+                        <input 
+                            type="number" 
+                            step="0.01"
+                            placeholder="Ex: 12.5"
+                            value={essayScore} 
+                            onChange={setEssayScore}
+                            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                        />
+                    </div>
+                </div>
             </div>
 
             <hr />
 
             <table>
+                {/* ... (Todo o conteúdo da <thead> e <tbody> continua idêntico) ... */}
                 <thead>
                     <tr>
                         <th>Minimizar</th>

@@ -8,7 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 import csv
 import difflib
-from ..constants import RANKING_URL, WEIGHTS_PATH, MAPPING_PATH
+from constants import RANKING_URL, WEIGHTS_PATH, MAPPING_PATH
 
 
 # Manual aliases for historical names that fuzzy matching can't guess logically

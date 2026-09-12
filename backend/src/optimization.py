@@ -28,6 +28,21 @@ def optimization(course: str, min_AC: float, std_scores: dict[str, list[float]],
                  constraints_dict: dict[str, list[list[str | int]]], min_subjects: list[str]=SUBJECTS) -> OptimizationResult:
 
     weights = utils.readCourseWeights(course)
+    if not weights:
+        raise RuntimeError(f"Pesos não encontrados para o curso {course}.")
+
+    missing_subjects = set(SUBJECTS) - set(std_scores)
+    extra_subjects = set(std_scores) - set(SUBJECTS)
+    if missing_subjects or extra_subjects:
+        raise ValueError(
+            f"Conjunto de disciplinas inválido. Ausentes: {sorted(missing_subjects)}; extras: {sorted(extra_subjects)}."
+        )
+
+    for subject, scores in std_scores.items():
+        if len(scores) != MAX_HITS - MIN_HITS + 1:
+            raise ValueError(f"{subject} deve ter {MAX_HITS - MIN_HITS + 1} escores padronizados.")
+        if any(score <= 0 for score in scores):
+            raise ValueError(f"{subject} possui escore padronizado menor ou igual a zero.")
     
     total_weights = sum(weights[subject] for subject in SUBJECTS)
 

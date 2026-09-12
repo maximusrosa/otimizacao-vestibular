@@ -34,6 +34,12 @@ SCORES_URL = "https://www.ufrgs.br/vestibular/cv{year}/histogramas/"
 
 RANKING_URL = "https://www1.ufrgs.br/PortalEnsino/GraduacaoProcessoSeletivo/index.php/DivulgacaoDadosChamamento"
 
+ESSAY_STATS_URL = "https://fisica.net/passenaufrgs/estatisticas/medias-da-redacao.php"
+
+MIN_ESSAY_SCORE = 0.0
+MAX_ESSAY_SCORE = 15.0
+MIN_APPROVED_ESSAY_SCORE = 4.5
+
 # Mapeamento do nome da disciplina no site para o código interno usado em SUBJECTS
 SUBJECT_NAME_TO_CODE = {
     "Língua Portuguesa": "PORT_RED",

@@ -1,120 +1,42 @@
 import requests
-from bs4 import BeautifulSoup
-from .constants import (
-    SUBJECTS, MIN_HITS, MAX_HITS, SCORES_URL, SUBJECT_NAME_TO_CODE, FOREIGN_LANGUAGES
-)
 
-
-def _parse_float(text: str) -> float:
-    """Converte número em formato brasileiro para float.
-
-    O separador decimal é sempre a vírgula (2 casas); o separador de milhar
-    varia por ano ('.' em 2025, ',' em 2022). Tratamos o último separador como
-    decimal e removemos os demais (agrupamento de milhar).
-    """
-    text = text.strip()
-    last_sep = max(text.rfind("."), text.rfind(","))
-    if last_sep == -1:
-        return float(text)
-    integer = text[:last_sep].replace(".", "").replace(",", "")
-    frac = text[last_sep + 1:]
-    return float(f"{integer}.{frac}")
-
-
-def _parse_std_scores(table) -> dict[int, float]:
-    """Extrai {escore: escore_padronizado} de uma tabela de histograma."""
-    tbody = table.find("tbody")
-    if not tbody:
-        return {}
-
-    scores = {}
-    for tr in tbody.find_all("tr"):
-        cols = [td.get_text(strip=True) for td in tr.find_all("td")]
-        if len(cols) < 2:
-            continue
-        hits = int(cols[0])            # Escore (nº de acertos)
-        scores[hits] = _parse_float(cols[1])  # Escore padronizado
-    return scores
+from .constants import FOREIGN_LANGUAGES, MAX_HITS, MIN_HITS, SCORES_URL, SUBJECTS
+from .scripts.save_scores import _parse_float, parse_all_scores
 
 
 def parse_scores(html: str, foreign_language: str) -> dict[str, list[float]]:
-    """
-    Extrai os escores padronizados por acerto (MIN_HITS..MAX_HITS) de cada
-    disciplina a partir do HTML da página de histogramas da UFRGS.
-
-    Retorna um dicionário {código_disciplina: [escores padronizados]}, onde a
-    língua estrangeira escolhida (`foreign_language`) é mapeada para "LEM".
-    """
     if foreign_language not in FOREIGN_LANGUAGES:
-        raise ValueError(
-            f"Língua estrangeira inválida: {foreign_language}. "
-            f"Opções: {FOREIGN_LANGUAGES}"
-        )
+        raise ValueError(f"Língua estrangeira inválida: {foreign_language}")
 
-    soup = BeautifulSoup(html, "html.parser")
+    records = parse_all_scores(html, "0")
+    scores = {}
+    language_code = f"LEM_{foreign_language.upper()}"
 
-    rows = soup.find_all("div", class_="row")
+    for record in records:
+        discipline = record["disciplina"]
+        if discipline.startswith("LEM_"):
+            if discipline != language_code:
+                continue
+            discipline = "LEM"
 
-    std_scores: dict[str, list[float]] = {}
+        scores.setdefault(discipline, {})[record["acertos"]] = record["escore"]
 
-    for row in rows:
-        # As duas colunas dentro da linha (tabela de dados + cabeçalho)
-        cols = row.select("div.col.s12.m6")
-        if len(cols) < 2:
-            continue
+    missing_subjects = set(SUBJECTS) - set(scores)
+    if missing_subjects:
+        raise RuntimeError(f"Escores incompletos. Disciplinas ausentes: {sorted(missing_subjects)}.")
 
-        table_heading = cols[1].select_one("table.col.s12")
-        if not table_heading:
-            continue
+    parsed_scores = {}
+    for subject in SUBJECTS:
+        subject_scores = scores[subject]
+        expected_hits = set(range(MIN_HITS, MAX_HITS + 1))
+        if set(subject_scores) != expected_hits:
+            raise RuntimeError(f"{subject} deve ter escores para acertos {MIN_HITS}-{MAX_HITS}.")
+        parsed_scores[subject] = [subject_scores[hits] for hits in range(MIN_HITS, MAX_HITS + 1)]
 
-        th = table_heading.select_one("thead tr th[colspan='2']")
-        if not th:
-            continue
-
-        subject = th.get_text(strip=True)
-
-        # Mapeia o nome da disciplina para o código interno
-        if subject in SUBJECT_NAME_TO_CODE:
-            code = SUBJECT_NAME_TO_CODE[subject]
-        elif subject == foreign_language:
-            code = "LEM"
-        else:
-            continue  # Ignora línguas não escolhidas e tabelas irrelevantes
-
-        if code in std_scores:
-            continue  # Evita duplicatas (ex.: "Língua Portuguesa" aparece 2x)
-
-        table = cols[0].select_one("table.col.s12")
-        if not table:
-            continue
-
-        scores = _parse_std_scores(table)
-
-        # Seleciona os escores de MIN_HITS a MAX_HITS (descarta o escore 0)
-        std_scores[code] = [scores[hits] for hits in range(MIN_HITS, MAX_HITS + 1)]
-
-    missing = [s for s in SUBJECTS if s not in std_scores]
-    if missing:
-        raise RuntimeError(f"Escores não encontrados para as disciplinas: {missing}")
-
-    return std_scores
+    return parsed_scores
 
 
 def get_scores(year: str, foreign_language: str) -> dict[str, list[float]]:
-    """Baixa a página de histogramas do ano e extrai os escores padronizados."""
-    html = requests.get(SCORES_URL.format(year=year)).text
-    return parse_scores(html, foreign_language)
-
-
-def main():
-    year = "2025"
-    foreign_language = "Alemão"
-
-    std_scores = get_scores(year, foreign_language)
-
-    for subject, scores in std_scores.items():
-        print(f"{subject:9s} -> {scores}")
-
-
-if __name__ == "__main__":
-    main()
+    response = requests.get(SCORES_URL.format(year=year), timeout=30)
+    response.raise_for_status()
+    return parse_scores(response.text, foreign_language)

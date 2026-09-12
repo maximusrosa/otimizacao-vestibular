@@ -15,3 +15,9 @@ def scores_html() -> str:
 def ranking_html() -> str:
     """HTML sintético com a tabela de ranking de chamamento."""
     return (FIXTURES_DIR / "ranking_sample.html").read_text(encoding="utf-8")
+
+
+@pytest.fixture
+def essay_stats_html() -> str:
+    """HTML sintético com a tabela de médias e desvios da redação."""
+    return (FIXTURES_DIR / "redacao_stats_sample.html").read_text(encoding="utf-8")

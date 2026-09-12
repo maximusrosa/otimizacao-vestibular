@@ -15,11 +15,15 @@ const MOCK_DATA = {
 function HomePage(){
     const navigate = useNavigate();
     
-    // Estado do formulário - inicializado com valores de teste
+    // Estado do formulário
     const [course, setCourse] = useState(MOCK_DATA.course);
     const [referenceYear, setReferenceYear] = useState(MOCK_DATA.reference_year);
     const [language, setLanguage] = useState(MOCK_DATA.foreign_language);
     const [entryMethod, setEntryMethod] = useState(MOCK_DATA.entry_method);
+    
+    // NOVO: Estado para a nota da Redação (Iniciando com uma nota vazia ou 0)
+    const [essayScore, setEssayScore] = useState(""); 
+    
     const [subjectsData, setSubjectsData] = useState(
       SUBJECTS.reduce((acc, subj) => ({
         ...acc,
@@ -29,9 +33,7 @@ function HomePage(){
 
     // Atualiza os inputs da tabela
     const handleSubjectChange = (id, field, value) => {
-      // Validação de intervalo para min e max
       if (field === 'min' || field === 'max') {
-        // Permite limpar o campo (string vazia)
         if (value === '') {
             setSubjectsData(prev => ({
                 ...prev,
@@ -42,14 +44,12 @@ function HomePage(){
 
         const intValue = parseInt(value, 10);
 
-        // Garante que é um número e está dentro do intervalo [1, 15]
         if (!isNaN(intValue) && intValue >= MIN_HITS && intValue <= MAX_HITS) {
              setSubjectsData(prev => ({
                 ...prev,
                 [id]: { ...prev[id], [field]: value }
             }));
         }
-        // Se estiver fora do intervalo ou inválido, ignora a alteração (input controlado não muda)
       } else {
           setSubjectsData(prev => ({
             ...prev,
@@ -62,9 +62,15 @@ function HomePage(){
     };
 
     const handleOptimize = async () => {
+      // Validação da nota de redação antes de enviar
+      const parsedEssayScore = parseFloat(essayScore);
+      if (isNaN(parsedEssayScore)) {
+          alert("Por favor, preencha uma nota válida para a Redação.");
+          return;
+      }
+
       // 1. Construir minSubjects
       const minSubjects = Object.entries(subjectsData)
-        // Filtra matérias onde minimize está TRUE
         .filter(([_, data]) => data.minimize)
         .map(([id, _]) => id);
 
@@ -92,8 +98,7 @@ function HomePage(){
         foreign_language: language,
         reference_year: referenceYear,
         entry_method: entryMethod,
-        // Enviando mock data pois o form não tem os scrapers ainda
-        std_scores: MOCK_DATA.std_scores,
+        essay_score: parsedEssayScore, // NOVO: Campo obrigatório enviado no payload!
       };
 
       console.log("Enviando Payload:", JSON.stringify(payload, null, 2));
@@ -105,9 +110,16 @@ function HomePage(){
             body: JSON.stringify(payload)
         });
         
+        // Trata erro de validação (422) ou outros erros HTTP amigavelmente
+        if (!response.ok) {
+            const errData = await response.json();
+            console.error("Erro do servidor:", errData);
+            alert("Erro na otimização. Verifique os dados enviados ou o console.");
+            return;
+        }
+        
         const result = await response.json();
         console.log("Resultado Recebido:", result);
-        console.log("Dados do gráfico (notas de corte histórico):", result.graphJson);
 
         navigate('/resultados', { 
           state: { 
@@ -117,22 +129,24 @@ function HomePage(){
         });
         
       } catch (error) {
-        alert("Erro na otimização. Verifique se o backend está rodando.");
+        alert("Erro na requisição. Verifique se o backend está rodando.");
         console.error(error);
       }
     };
     
-    // 2. Retorna a Visualização
+    // 3. Retorna a Visualização
     return (
         <HomeView 
             course={course}
             setCourse={(e) => setCourse(e.target.value)}
-            reference_year={referenceYear}
+            referenceYear={referenceYear}
             setReferenceYear={(e) => setReferenceYear(e.target.value)}
             language={language}
             setLanguage={(e) => setLanguage(e.target.value)}
             entryMethod={entryMethod}
             setEntryMethod={(e) => setEntryMethod(e.target.value)}
+            essayScore={essayScore}
+            setEssayScore={(e) => setEssayScore(e.target.value)}
             handleOptimize={handleOptimize}
             subjects={subjectsData}
             handleSubjectChange={handleSubjectChange}
