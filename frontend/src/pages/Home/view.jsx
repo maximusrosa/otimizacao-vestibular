@@ -11,8 +11,10 @@ const HomeView = ({
     setLanguage,
     entryMethod,
     setEntryMethod,
-    essayScore,
-    setEssayScore,
+    essayConstraints,
+    handleEssayConstraintChange,
+    portRedObjective,
+    setPortRedObjective,
     handleOptimize, 
     subjects, 
     handleSubjectChange, 
@@ -22,11 +24,8 @@ const HomeView = ({
             <h1>Otimizador de Acertos - Vestibular UFRGS</h1>
 
             <p className="description">
-                Digite seus acertos (1–15) e a nota da Redação (1–15 – cada campo mostra "/15" ao lado).
-                Escolha o curso, idioma e a forma de acesso. O simulador calcula o escore padronizado
-                e a média harmônica ponderada por curso, exibe a nota de corte (com seletor de ano)
-                e a sua posição geral/cota, incluindo a linha "Nota Simulada" e frases de fila de espera
-                quando cabíveis.
+                Defina os limites de acertos e da Redação, escolha o componente de Português e Redação
+                que deve ser minimizado e execute a simulação para a nota de corte selecionada.
             </p>
 
             <div className="filters">
@@ -61,21 +60,6 @@ const HomeView = ({
                         <button className="clear">×</button>
                     </div>
                 </div>
-                
-                {/* NOVO CAMPO: Nota da Redação */}
-                <div className="field">
-                    <label>Nota da Redação</label>
-                    <div className="select-wrapper">
-                        <input 
-                            type="number" 
-                            step="0.01"
-                            placeholder="Ex: 12.5"
-                            value={essayScore} 
-                            onChange={setEssayScore}
-                            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
-                        />
-                    </div>
-                </div>
             </div>
 
             <hr />
@@ -86,7 +70,7 @@ const HomeView = ({
                     <tr>
                         <th>Minimizar</th>
                         <th>Prova</th>
-                        <th colSpan="2">Acertos</th>
+                        <th colSpan="2">Limites</th>
                     </tr>
                     <tr className="subhead">
                         <th></th>
@@ -139,10 +123,37 @@ const HomeView = ({
                         <td><input type="number" value={subjects.MAT.max} onChange={(e) => handleSubjectChange('MAT', 'max', e.target.value)} /></td>
                     </tr>
                     <tr>
-                        <td><input type="checkbox" id="PORT_RED" checked={subjects.PORT_RED.minimize} onChange={(e) => handleSubjectChange('PORT_RED', 'minimize', e.target.checked)} /></td>
-                        <td><label htmlFor="PORT_RED">Português / Redação</label></td>
+                        <td className="objective-managed">—</td>
+                        <td><label htmlFor="PORT_RED">Português (acertos)</label></td>
                         <td><input type="number" value={subjects.PORT_RED.min} onChange={(e) => handleSubjectChange('PORT_RED', 'min', e.target.value)} /></td>
                         <td><input type="number" value={subjects.PORT_RED.max} onChange={(e) => handleSubjectChange('PORT_RED', 'max', e.target.value)} /></td>
+                    </tr>
+                    <tr>
+                        <td className="objective-managed">—</td>
+                        <td><label htmlFor="essay-min">Redação (nota)</label></td>
+                        <td>
+                            <input
+                                id="essay-min"
+                                aria-label="Nota mínima da Redação"
+                                type="number"
+                                min="4.5"
+                                max="15"
+                                step="0.1"
+                                value={essayConstraints.min}
+                                onChange={(e) => handleEssayConstraintChange('min', e.target.value)}
+                            />
+                        </td>
+                        <td>
+                            <input
+                                aria-label="Nota máxima da Redação"
+                                type="number"
+                                min="4.5"
+                                max="15"
+                                step="0.1"
+                                value={essayConstraints.max}
+                                onChange={(e) => handleEssayConstraintChange('max', e.target.value)}
+                            />
+                        </td>
                     </tr>
                     <tr>
                         <td><input type="checkbox" id="LEM" checked={subjects.LEM.minimize} onChange={(e) => handleSubjectChange('LEM', 'minimize', e.target.checked)} /></td>
@@ -152,6 +163,16 @@ const HomeView = ({
                     </tr>
                 </tbody>
             </table>
+
+            <div className="port-red-objective field">
+                <label htmlFor="port-red-objective">Objetivo de Português e Redação</label>
+                <select id="port-red-objective" value={portRedObjective} onChange={setPortRedObjective}>
+                    <option value="none">Não minimizar</option>
+                    <option value="portuguese">Minimizar Português</option>
+                    <option value="essay">Minimizar Redação</option>
+                    <option value="combined">Minimizar nota conjunta</option>
+                </select>
+            </div>
 
             <div className="actions">
                 <button className="main-button" onClick={() => {handleOptimize()}}>Otimizar</button>

@@ -1,6 +1,6 @@
 import '../../index.css';
 import './styles.css';
-import { Bar, BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LabelList } from 'recharts';
+import { Bar, BarChart, XAxis, YAxis, CartesianGrid, Legend, LabelList } from 'recharts';
 
 const ResultsView = ({ 
     provasResultados, 
@@ -26,20 +26,16 @@ const ResultsView = ({
                     <thead>
                         <tr>
                             <th>Prova</th>
-                            <th>Acertos</th>
+                            <th>Acertos / Nota</th>
                             <th>Escore Padronizado</th>
-                            <th>Média</th>
-                            <th>Desvio Padrão</th>
                         </tr>
                     </thead>
                     <tbody>
                         {provasResultados.map((prova, index) => (
                             <tr key={index}>
                                 <td>{prova.prova}</td>
-                                <td>{prova.acertos}</td>
+                                <td>{prova.resultado}</td>
                                 <td>{formatarNumero(prova.escorePadronizado, 2)}</td>
-                                <td>{formatarNumero(prova.media, 4)}</td>
-                                <td>{formatarNumero(prova.desvioPadrao, 4)}</td>
                             </tr>
                         ))}
                     </tbody>

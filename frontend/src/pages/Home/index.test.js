@@ -10,6 +10,7 @@ describe('HomePage /optimize payload (dados mockados)', () => {
     mockNavigate.mockClear();
     global.fetch = jest.fn(() =>
       Promise.resolve({
+        ok: true,
         json: () => Promise.resolve({ result: {}, graphJson: {} }),
       })
     );
@@ -38,6 +39,8 @@ describe('HomePage /optimize payload (dados mockados)', () => {
       foreign_language: 'Inglês', // regressão: ausência causava 422
       reference_year: '2025',
       entry_method: 'LI_EP',
+      essay_constraints: { min: 4.5, max: 15 },
+      port_red_objective: 'none',
     });
     expect(payload.constraints).toBeDefined();
     expect(Array.isArray(payload.min_subjects)).toBe(true);
@@ -54,5 +57,20 @@ describe('HomePage /optimize payload (dados mockados)', () => {
         expect.objectContaining({ state: expect.any(Object) })
       )
     );
+  });
+
+  test('envia limites decimais e objetivo separado de Redação', async () => {
+    render(<HomePage />);
+
+    await userEvent.clear(screen.getByLabelText('Nota mínima da Redação'));
+    await userEvent.type(screen.getByLabelText('Nota mínima da Redação'), '7.3');
+    await userEvent.selectOptions(screen.getByLabelText('Objetivo de Português e Redação'), 'essay');
+    await userEvent.click(screen.getByRole('button', { name: /otimizar/i }));
+
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
+    const payload = JSON.parse(global.fetch.mock.calls[0][1].body);
+    expect(payload.essay_constraints).toEqual({ min: 7.3, max: 15 });
+    expect(payload.port_red_objective).toBe('essay');
+    expect(payload.min_subjects).not.toContain('PORT_RED');
   });
 });

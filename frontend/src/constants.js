@@ -9,7 +9,7 @@ export const SUBJECTS = [
   { id: 'HIS', name: 'História' },
   { id: 'LIT', name: 'Literatura' },
   { id: 'MAT', name: 'Matemática' },
-  { id: 'PORT_RED', name: 'Português / Redação' },
+  { id: 'PORT_RED', name: 'Português' },
   { id: 'LEM', name: 'Língua Estrangeira' },
   { id: 'QUI', name: 'Química' }
 ];

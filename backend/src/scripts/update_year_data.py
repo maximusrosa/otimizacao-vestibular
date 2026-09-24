@@ -1,3 +1,5 @@
+"""Atualizacao anual, validada e recuperavel, dos dados da aplicacao."""
+
 import argparse
 import csv
 import json
@@ -30,6 +32,7 @@ ESSAY_CSV = DATA_DIR / "redacao_stats.csv"
 
 
 def load_json(path: Path, default):
+    """Le um arquivo existente ou devolve a estrutura inicial informada."""
     if not path.exists():
         return default
     with open(path, "r", encoding="utf-8") as f:
@@ -37,6 +40,7 @@ def load_json(path: Path, default):
 
 
 def atomic_write_json(path: Path, data):
+    """Grava primeiro em temporario e so entao substitui o JSON oficial."""
     temp_path = path.with_suffix(path.suffix + ".tmp")
     with open(temp_path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
@@ -44,6 +48,7 @@ def atomic_write_json(path: Path, data):
 
 
 def atomic_write_csv(path: Path, fieldnames: list[str], rows: list[dict]):
+    """Grava primeiro em temporario e so entao substitui o CSV oficial."""
     temp_path = path.with_suffix(path.suffix + ".tmp")
     with open(temp_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
@@ -53,6 +58,7 @@ def atomic_write_csv(path: Path, fieldnames: list[str], rows: list[dict]):
 
 
 def backup_existing_files(paths: list[Path]) -> Path:
+    """Copia a versao atual da base para uma pasta identificada por data/hora."""
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     backup_dir = DATA_DIR / "backups" / timestamp
     backup_dir.mkdir(parents=True, exist_ok=True)
@@ -65,6 +71,7 @@ def backup_existing_files(paths: list[Path]) -> Path:
 
 
 def records_to_nested_scores(records: list[dict]) -> dict[str, dict[str, float]]:
+    """Converte registros planos no formato de consulta usado em memoria."""
     nested = {}
     for record in records:
         discipline = record["disciplina"]
@@ -74,6 +81,7 @@ def records_to_nested_scores(records: list[dict]) -> dict[str, dict[str, float]]
 
 
 def nested_scores_to_csv_rows(scores_data: dict) -> list[dict]:
+    """Transforma a base de escores em linhas deterministicas de CSV."""
     rows = []
     for year in sorted(scores_data, key=int):
         for discipline in sorted(scores_data[year]):
@@ -91,10 +99,12 @@ def nested_scores_to_csv_rows(scores_data: dict) -> list[dict]:
 
 
 def rankings_to_csv_rows(rankings_data: list[dict]) -> list[dict]:
+    """Ordena o ranking para gerar um CSV estavel e facil de comparar."""
     return sorted(rankings_data, key=lambda row: (int(row["ano"]), row["curso"], row["modalidade"], -row["nota_final"]))
 
 
 def essay_to_csv_rows(essay_data: dict) -> list[dict]:
+    """Transforma as estatisticas anuais de redacao em linhas de CSV."""
     rows = []
     for year in sorted(essay_data, key=int):
         rows.append({"year": year, **essay_data[year]})
@@ -102,6 +112,7 @@ def essay_to_csv_rows(essay_data: dict) -> list[dict]:
 
 
 def fetch_scores_for_year(year: str) -> dict[str, dict[str, float]]:
+    """Baixa, interpreta e valida os escores objetivos de um ano."""
     response = requests.get(SCORES_URL.format(year=year), timeout=30)
     response.raise_for_status()
 
@@ -112,6 +123,7 @@ def fetch_scores_for_year(year: str) -> dict[str, dict[str, float]]:
 
 
 def validate_scores_for_year(year: str, scores: dict[str, dict[str, float]]):
+    """Exige todas as provas, 1 a 15 acertos e EP estritamente positivo."""
     expected_disciplines = set(SUBJECT_NAME_TO_CODE.values()) | {f"LEM_{language.upper()}" for language in FOREIGN_LANGUAGES}
     missing = expected_disciplines - set(scores)
     if missing:
@@ -129,6 +141,7 @@ def validate_scores_for_year(year: str, scores: dict[str, dict[str, float]]):
 
 
 def validate_rankings_for_year(year: str, rankings: list[dict]):
+    """Impede a publicacao de um ranking vazio ou misturado com outro ano."""
     if not rankings:
         raise RuntimeError(f"Nenhum ranking foi encontrado para {year}.")
     if any(str(row["ano"]) != year for row in rankings):
@@ -136,6 +149,7 @@ def validate_rankings_for_year(year: str, rankings: list[dict]):
 
 
 def validate_essay_for_year(year: str, essay_data: dict):
+    """Exige estatisticas de redacao do ano e desvio padrao valido."""
     if year not in essay_data:
         raise RuntimeError(f"Estatísticas de redação de {year} não encontradas.")
     stats = essay_data[year]
@@ -144,6 +158,7 @@ def validate_essay_for_year(year: str, essay_data: dict):
 
 
 def update_year_data(year: str, dry_run: bool = False, force: bool = False):
+    """Executa o fluxo anual completo e publica os arquivos apenas ao final."""
     scores_data = load_json(SCORES_JSON, {})
     rankings_data = load_json(RANKINGS_JSON, [])
     essay_data = load_json(ESSAY_JSON, {})
@@ -152,6 +167,8 @@ def update_year_data(year: str, dry_run: bool = False, force: bool = False):
     if not force and (year in scores_data or ranking_year_exists or year in essay_data):
         raise RuntimeError(f"O ano {year} já existe na base. Use --force para substituir.")
 
+    # Toda coleta e validacao acontece antes do primeiro arquivo oficial ser
+    # alterado. Assim, uma fonte indisponivel nao deixa a base pela metade.
     print(f"Baixando escores objetivos de {year}...")
     scores_for_year = fetch_scores_for_year(year)
 
@@ -178,6 +195,8 @@ def update_year_data(year: str, dry_run: bool = False, force: bool = False):
     backup_dir = backup_existing_files([SCORES_JSON, SCORES_CSV, RANKINGS_JSON, RANKINGS_CSV, ESSAY_JSON, ESSAY_CSV])
     print(f"Backup criado em {backup_dir}")
 
+    # os.replace e atomico no mesmo volume: leitores veem o arquivo antigo ou
+    # o novo completo, nunca um arquivo parcialmente escrito.
     atomic_write_json(SCORES_JSON, updated_scores)
     atomic_write_csv(
         SCORES_CSV,

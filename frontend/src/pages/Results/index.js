@@ -11,22 +11,43 @@ function Resultados(){
     console.log("Dados de otimização:", results);
     console.log("Dados históricos de notas de corte:", historicalData);
     
-    // Dados temporários de teste - Resultados das Provas
-    const provasResultados = [
-        { prova: 'Biologia', acertos: 12, escorePadronizado: 545.32, media: 8.5432, desvioPadrao: 2.3456 },
-        { prova: 'Física', acertos: 15, escorePadronizado: 678.90, media: 10.2345, desvioPadrao: 3.1234 },
-        { prova: 'Geografia', acertos: 10, escorePadronizado: 512.45, media: 7.8901, desvioPadrao: 2.5678 },
-        { prova: 'História', acertos: 14, escorePadronizado: 623.78, media: 9.6789, desvioPadrao: 2.8901 },
-        { prova: 'Literatura', acertos: 11, escorePadronizado: 567.23, media: 8.9012, desvioPadrao: 2.4567 },
-        { prova: 'Matemática', acertos: 18, escorePadronizado: 734.56, media: 11.5678, desvioPadrao: 3.4567 },
-        { prova: 'Português / Redação', acertos: 16, escorePadronizado: 689.34, media: 10.6789, desvioPadrao: 3.2345 },
-        { prova: 'Língua Estrangeira', acertos: 13, escorePadronizado: 598.12, media: 9.1234, desvioPadrao: 2.6789 }
-    ];
+    const subjectNames = {
+        BIO: 'Biologia', FIS: 'Física', GEO: 'Geografia', HIS: 'História',
+        LIT: 'Literatura', MAT: 'Matemática', LEM: 'Língua Estrangeira', QUI: 'Química'
+    };
+    const chosenHits = results?.chosen_hits || {};
+    const provasResultados = Object.entries(chosenHits)
+        .filter(([subject]) => subject !== 'PORT_RED')
+        .map(([subject, data]) => ({
+            prova: subjectNames[subject] || subject,
+            resultado: data.num_hits,
+            escorePadronizado: data.EP,
+        }));
+
+    if (chosenHits.PORT_RED) {
+        provasResultados.push(
+            {
+                prova: 'Português',
+                resultado: chosenHits.PORT_RED.num_hits,
+                escorePadronizado: chosenHits.PORT_RED.portuguese_EP,
+            },
+            {
+                prova: 'Redação',
+                resultado: chosenHits.PORT_RED.essay_score.toFixed(1),
+                escorePadronizado: chosenHits.PORT_RED.essay_EP,
+            },
+            {
+                prova: 'Português e Redação (50/50)',
+                resultado: '—',
+                escorePadronizado: chosenHits.PORT_RED.EP,
+            }
+        );
+    }
 
     // Dados temporários de teste - Cards de Resumo
     const resumoResultados = {
-        notaTotal: 635.84,
-        mediaPonderada: 624.72,
+        notaTotal: results?.AC || 0,
+        mediaPonderada: results?.threshold || 0,
         colocacao: 64,
         vagas: '10/5/30',
         posicaoCota: 14
@@ -83,6 +104,7 @@ function Resultados(){
 
     // Função auxiliar para formatar números
     const formatarNumero = (numero, casasDecimais = 2) => {
+        if (numero === null || numero === undefined) return '—';
         return numero.toFixed(casasDecimais).replace('.', ',');
     };
 

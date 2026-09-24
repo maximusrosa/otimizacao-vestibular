@@ -42,7 +42,7 @@ tbody td {
 }
 
 tbody input[type="number"] {
-  width: 60px;
+  width: 76px;
   height: 28px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -113,4 +113,18 @@ tbody input[type="checkbox"] {
 
 .main-button:hover {
   background: #0b5fa5;
+}
+
+.objective-managed {
+  color: #777;
+  text-align: center;
+}
+
+.port-red-objective {
+  max-width: 360px;
+  margin: 0 0 24px auto;
+}
+
+.port-red-objective select {
+  width: 100%;
 }

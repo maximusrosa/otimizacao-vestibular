@@ -1,8 +1,16 @@
-import pulp
-from .scripts import utils
-from .constants import *
+"""Modelo linear inteiro para as provas objetivas e a Redacao discretizada."""
 
-# Objeto de retorno
+import pulp
+
+from .constants import MAX_HITS, MIN_HITS, PORT_RED_OBJECTIVES, SUBJECTS
+from .essay_scores import compose_port_red_score
+from .scripts import utils
+
+
+PORT_RED = "PORT_RED"
+REGULAR_SUBJECTS = [subject for subject in SUBJECTS if subject != PORT_RED]
+
+
 class OptimizationResult:
     def __init__(self, chosen_hits: dict[str, dict[str, float]], AC: float, threshold: float, status: str):
         self.solve_status = status
@@ -11,25 +19,39 @@ class OptimizationResult:
         self.threshold = threshold
 
 
-def addConstraints(model, x, constraints_dict: dict[str, list[list[str | int]]]):
+def add_hit_constraints(model, hit_expressions: dict, constraints_dict: dict[str, list[list[str | int]]]):
+    """Aplica limites de acertos usando uma expressao por prova objetiva."""
+    unknown_subjects = set(constraints_dict) - set(hit_expressions)
+    if unknown_subjects:
+        raise ValueError(f"Restrições para disciplinas desconhecidas: {sorted(unknown_subjects)}.")
+
     for subject, constraints in constraints_dict.items():
-        for i, (operator, value) in enumerate(constraints):
+        for index, (operator, value) in enumerate(constraints):
             if operator == ">=":
-                model += pulp.lpSum(num_hits * x[subject][num_hits] 
-                                    for num_hits in range(MIN_HITS, MAX_HITS +1)) >= value, f"min_hits_{subject}_{i}"
+                model += hit_expressions[subject] >= value, f"min_hits_{subject}_{index}"
             elif operator == "<=":
-                model += pulp.lpSum(num_hits * x[subject][num_hits] 
-                                    for num_hits in range(MIN_HITS, MAX_HITS +1)) <= value, f"max_hits_{subject}_{i}"
+                model += hit_expressions[subject] <= value, f"max_hits_{subject}_{index}"
             else:
-                raise ValueError(f"Unknown operator {operator} for subject {subject}")
+                raise ValueError(f"Operador desconhecido {operator} para {subject}.")
 
 
-def optimization(course: str, min_AC: float, std_scores: dict[str, list[float]],
-                 constraints_dict: dict[str, list[list[str | int]]], min_subjects: list[str]=SUBJECTS) -> OptimizationResult:
-
+def optimization(
+    course: str,
+    min_AC: float,
+    std_scores: dict[str, list[float]],
+    constraints_dict: dict[str, list[list[str | int]]],
+    min_subjects: list[str],
+    essay_options: list[dict[str, float]],
+    port_red_objective: str = "none",
+) -> OptimizationResult:
+    """Encontra acertos inteiros e uma nota de Redacao em passos de 0,1."""
     weights = utils.readCourseWeights(course)
     if not weights:
         raise RuntimeError(f"Pesos não encontrados para o curso {course}.")
+    if port_red_objective not in PORT_RED_OBJECTIVES:
+        raise ValueError(f"Objetivo de Português/Redação inválido: {port_red_objective}.")
+    if PORT_RED in min_subjects:
+        raise ValueError("Use port_red_objective para minimizar Português, Redação ou a nota conjunta.")
 
     missing_subjects = set(SUBJECTS) - set(std_scores)
     extra_subjects = set(std_scores) - set(SUBJECTS)
@@ -37,105 +59,120 @@ def optimization(course: str, min_AC: float, std_scores: dict[str, list[float]],
         raise ValueError(
             f"Conjunto de disciplinas inválido. Ausentes: {sorted(missing_subjects)}; extras: {sorted(extra_subjects)}."
         )
+    unknown_min_subjects = set(min_subjects) - set(REGULAR_SUBJECTS)
+    if unknown_min_subjects:
+        raise ValueError(f"Disciplinas inválidas na função objetivo: {sorted(unknown_min_subjects)}.")
 
+    expected_score_count = MAX_HITS - MIN_HITS + 1
     for subject, scores in std_scores.items():
-        if len(scores) != MAX_HITS - MIN_HITS + 1:
-            raise ValueError(f"{subject} deve ter {MAX_HITS - MIN_HITS + 1} escores padronizados.")
+        if len(scores) != expected_score_count:
+            raise ValueError(f"{subject} deve ter {expected_score_count} escores padronizados.")
         if any(score <= 0 for score in scores):
             raise ValueError(f"{subject} possui escore padronizado menor ou igual a zero.")
-    
+    if not essay_options:
+        raise ValueError("Ao menos uma nota de redação deve ser oferecida ao solver.")
+
+    # Cada par contem tudo que o modelo precisa como constante. Isso evita o
+    # termo nao linear 1 / (EP_PORT + EP_RED) durante a otimizacao.
+    port_red_options = {}
+    for hits in range(MIN_HITS, MAX_HITS + 1):
+        portuguese_ep = std_scores[PORT_RED][hits - MIN_HITS]
+        for essay_index, essay in enumerate(essay_options):
+            combined_ep = compose_port_red_score(portuguese_ep, essay["standard_score"])
+            if combined_ep <= 0:
+                raise ValueError("A combinação de Português e Redação gerou EP menor ou igual a zero.")
+            port_red_options[(hits, essay_index)] = {
+                "portuguese_ep": portuguese_ep,
+                "essay_score": essay["raw_score"],
+                "essay_ep": essay["standard_score"],
+                "combined_ep": combined_ep,
+            }
+
     total_weights = sum(weights[subject] for subject in SUBJECTS)
-
-    # --------------- Model --------------------- #
-
     model = pulp.LpProblem("UFRGS_Vest_Optim", pulp.LpMinimize)
 
-    # --------------- Variables ----------------- #
+    x = {
+        subject: {
+            hits: pulp.LpVariable(f"x_{subject}_{hits}", cat="Binary")
+            for hits in range(MIN_HITS, MAX_HITS + 1)
+        }
+        for subject in REGULAR_SUBJECTS
+    }
+    z = {
+        option: pulp.LpVariable(f"z_PORT_RED_{option[0]}_{option[1]}", cat="Binary")
+        for option in port_red_options
+    }
 
-    x = {subject: {num_hits: pulp.LpVariable(f"x_{subject}_{num_hits}", cat="Binary") 
-                for num_hits in range(MIN_HITS, MAX_HITS +1)} for subject in SUBJECTS}
+    hit_expressions = {}
+    ep_expressions = {}
+    reciprocal_expressions = {}
 
-    # Variáveis dos escores padronizados 
-    EP_var = {subject: pulp.LpVariable(f"EP_{subject}", lowBound=1e-6) for subject in SUBJECTS}
-    
-    # Variáveis auxiliares, linearização da nota final
-    y_var  = {subject: pulp.LpVariable(f"y_{subject}", lowBound=0) for subject in SUBJECTS}
+    for subject in REGULAR_SUBJECTS:
+        model += pulp.lpSum(x[subject].values()) == 1, f"one_choice_{subject}"
+        hit_expressions[subject] = pulp.lpSum(hits * x[subject][hits] for hits in x[subject])
+        ep_expressions[subject] = pulp.lpSum(
+            std_scores[subject][hits - MIN_HITS] * x[subject][hits] for hits in x[subject]
+        )
+        reciprocal_expressions[subject] = pulp.lpSum(
+            (1.0 / std_scores[subject][hits - MIN_HITS]) * x[subject][hits] for hits in x[subject]
+        )
 
+    model += pulp.lpSum(z.values()) == 1, "one_choice_PORT_RED"
+    hit_expressions[PORT_RED] = pulp.lpSum(option[0] * variable for option, variable in z.items())
+    portuguese_ep_expression = pulp.lpSum(
+        port_red_options[option]["portuguese_ep"] * variable for option, variable in z.items()
+    )
+    essay_ep_expression = pulp.lpSum(
+        port_red_options[option]["essay_ep"] * variable for option, variable in z.items()
+    )
+    ep_expressions[PORT_RED] = pulp.lpSum(
+        port_red_options[option]["combined_ep"] * variable for option, variable in z.items()
+    )
+    reciprocal_expressions[PORT_RED] = pulp.lpSum(
+        (1.0 / port_red_options[option]["combined_ep"]) * variable for option, variable in z.items()
+    )
 
-    # --------------- Constraints -------------- #
+    model += (
+        pulp.lpSum(weights[subject] * reciprocal_expressions[subject] for subject in SUBJECTS)
+        <= total_weights / min_AC,
+        "min_AC",
+    )
+    model += pulp.lpSum(hit_expressions.values()) >= 41, "total_hits"
+    add_hit_constraints(model, hit_expressions, constraints_dict)
 
-    # Link EP and y
-    for subject in SUBJECTS:
-        # exactly one choice
-        model += pulp.lpSum(x[subject][num_hits] for num_hits in range(MIN_HITS, MAX_HITS +1)) == 1, f"one_choice_{subject}"
+    objective_terms = [ep_expressions[subject] for subject in min_subjects]
+    if port_red_objective == "portuguese":
+        objective_terms.append(portuguese_ep_expression)
+    elif port_red_objective == "essay":
+        objective_terms.append(essay_ep_expression)
+    elif port_red_objective == "combined":
+        objective_terms.append(ep_expressions[PORT_RED])
+    model += pulp.lpSum(objective_terms), "Min_selected_EPs"
 
-        # EP definition
-        model += EP_var[subject] == pulp.lpSum(std_scores[subject][num_hits-MIN_HITS] * 
-                                            x[subject][num_hits] for num_hits in range(MIN_HITS, MAX_HITS +1)), f"EP_def_{subject}"
-
-        # y definition
-        model += y_var[subject] == pulp.lpSum((1.0 / std_scores[subject][num_hits-MIN_HITS]) *
-                                            x[subject][num_hits] for num_hits in range(MIN_HITS, MAX_HITS +1)), f"y_def_{subject}"
-
-    # Minimum AC
-    model += pulp.lpSum(weights[subject] * y_var[subject] 
-                        for subject in SUBJECTS) <= total_weights / min_AC, "min_AC"
-
-    # Total hits >= 30% of all questions
-    model += pulp.lpSum(num_hits * x[subject][num_hits] 
-                        for subject in SUBJECTS for num_hits in range(MIN_HITS, MAX_HITS +1)) >= 41, "total_hits"
-    
-    # User-defined constraints
-    # NOTA: Matérias que não estiverem em 'constraints_dict' são tratadas como variáveis livres.
-    # - Se não estiverem sendo minimizadas (min_subjects), o solver tenderá a aumentar seus acertos
-    #   (até o máximo) para reduzir o 'y' total e facilitar o atingimento do AC mínimo.
-    # - Isso permite "compensar" notas baixas nas matérias alvo.
-    addConstraints(model, x, constraints_dict)
-
-    # --------------- Objective ------------------ #
-
-    model += pulp.lpSum(EP_var[subject] for subject in min_subjects), "Min_sum_EPs"
-
-    # -------------------------------------------- #
-
-    # Solve
-    solver = pulp.PULP_CBC_CMD(msg=True, timeLimit=60)
-    model.solve(solver)
-    
-    # Output
+    model.solve(pulp.PULP_CBC_CMD(msg=False, timeLimit=60))
     status = pulp.LpStatus[model.status]
-    print("Solver status:", status)
+    if status not in ("Optimal", "Optimal (Integer)", "Feasible"):
+        return OptimizationResult({}, AC=0.0, threshold=min_AC, status=status)
 
-    if status in ("Optimal","Optimal (Integer)","Feasible"):
-        chosen = {}
-        # y_val = 1/(EP_selecionado)
-        y_vals = {}
+    chosen = {}
+    reciprocal_values = {}
+    for subject in REGULAR_SUBJECTS:
+        selected_hits = next(hits for hits, variable in x[subject].items() if pulp.value(variable) >= 0.5)
+        selected_ep = std_scores[subject][selected_hits - MIN_HITS]
+        chosen[subject] = {"num_hits": selected_hits, "EP": selected_ep}
+        reciprocal_values[subject] = 1.0 / selected_ep
 
-        for subject in SUBJECTS:
-            q_chosen = next(num_hits for num_hits in range(MIN_HITS, MAX_HITS + 1) 
-                            if pulp.value(x[subject][num_hits]) >= 1) # type: ignore
-            ep_val = pulp.value(EP_var[subject])
-            chosen[subject] = {"num_hits": q_chosen, "EP": ep_val}
+    selected_option = next(option for option, variable in z.items() if pulp.value(variable) >= 0.5)
+    selected_port_red = port_red_options[selected_option]
+    chosen[PORT_RED] = {
+        "num_hits": selected_option[0],
+        "EP": selected_port_red["combined_ep"],
+        "portuguese_EP": selected_port_red["portuguese_ep"],
+        "essay_score": selected_port_red["essay_score"],
+        "essay_EP": selected_port_red["essay_ep"],
+    }
+    reciprocal_values[PORT_RED] = 1.0 / selected_port_red["combined_ep"]
 
-            y_vals[subject] = pulp.value(y_var[subject])
-
-        print("\nChosen EP values:")
-
-        for subject,info in chosen.items():
-            print(f" {subject:4s} -> HITS = {info['num_hits']:2d}, EP = {info['EP']:.2f}")
-
-        sum_p_y = sum(weights[subject] * y_vals[subject] for subject in SUBJECTS)
-        grade = round(total_weights / sum_p_y, 2)
-
-        result = OptimizationResult(chosen, AC=grade, threshold=min_AC, status=status)
-
-        print()
-        print(f"nota = {grade:.2f} (limite {min_AC})")
-        #print(f"\nSum p_i*y_i = {sum_p_y:.6f}")
-        #print("Objective =", pulp.value(model.objective))
-    else:
-        print("No feasible solution.")
-        result = OptimizationResult({}, AC=0.0, threshold=min_AC, status=status)
-
-    return result
-
+    weighted_reciprocal_sum = sum(weights[subject] * reciprocal_values[subject] for subject in SUBJECTS)
+    grade = round(total_weights / weighted_reciprocal_sum, 2)
+    return OptimizationResult(chosen, AC=grade, threshold=min_AC, status=status)

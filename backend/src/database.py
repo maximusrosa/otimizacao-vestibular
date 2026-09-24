@@ -14,6 +14,7 @@ DB_REDACAO_STATS = {}
 # FUNÇÕES DE STARTUP E SHUTDOWN
 # ==========================================
 def load_databases():
+    """Carrega os tres conjuntos de dados e pre-calcula notas de corte."""
     global DB_ESCORES, DB_CUTOFFS, DB_RANKINGS_COMPLETOS, DB_REDACAO_STATS
     print("Iniciando carregamento dos dados para a memória...")
 
@@ -78,6 +79,7 @@ def load_databases():
 
 
 def clear_databases():
+    """Libera as estruturas globais durante o encerramento da API."""
     global DB_ESCORES, DB_CUTOFFS, DB_RANKINGS_COMPLETOS, DB_REDACAO_STATS
     DB_ESCORES.clear()
     DB_CUTOFFS.clear()
@@ -121,6 +123,7 @@ def get_min_ac_from_memory(year: str, course: str, entry_mode: str) -> float:
 
 
 def get_essay_stats_from_memory(year: str) -> dict:
+    """Retorna media e desvio da redacao necessarios para calcular seu EP."""
     try:
         stats = DB_REDACAO_STATS[year]
     except KeyError:
@@ -133,6 +136,7 @@ def get_essay_stats_from_memory(year: str) -> dict:
 
 
 def get_data_status() -> dict[str, list[str]]:
+    """Informa quais anos estao disponiveis em cada conjunto da base."""
     ranking_years = sorted({str(candidate["ano"]) for candidate in DB_RANKINGS_COMPLETOS}, key=int)
     return {
         "scores_years": sorted(DB_ESCORES.keys(), key=int),
@@ -142,6 +146,7 @@ def get_data_status() -> dict[str, list[str]]:
 
 
 def get_cutoff_graph_from_memory(reference_year: int, course: str, entry_mode: str, years_back: int = 5) -> dict[int, float]:
+    """Monta a serie historica usando as mesmas notas de corte da otimizacao."""
     graph_data = {}
     first_year = reference_year - years_back
 

@@ -39,6 +39,8 @@ ESSAY_STATS_URL = "https://fisica.net/passenaufrgs/estatisticas/medias-da-redaca
 MIN_ESSAY_SCORE = 0.0
 MAX_ESSAY_SCORE = 15.0
 MIN_APPROVED_ESSAY_SCORE = 4.5
+ESSAY_SCORE_STEP = 0.1
+PORT_RED_OBJECTIVES = {"none", "portuguese", "essay", "combined"}
 
 # Mapeamento do nome da disciplina no site para o código interno usado em SUBJECTS
 SUBJECT_NAME_TO_CODE = {

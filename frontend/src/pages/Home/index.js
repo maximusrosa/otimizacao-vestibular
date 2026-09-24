@@ -21,8 +21,8 @@ function HomePage(){
     const [language, setLanguage] = useState(MOCK_DATA.foreign_language);
     const [entryMethod, setEntryMethod] = useState(MOCK_DATA.entry_method);
     
-    // NOVO: Estado para a nota da Redação (Iniciando com uma nota vazia ou 0)
-    const [essayScore, setEssayScore] = useState(""); 
+    const [essayConstraints, setEssayConstraints] = useState({ min: 4.5, max: 15.0 });
+    const [portRedObjective, setPortRedObjective] = useState('none');
     
     const [subjectsData, setSubjectsData] = useState(
       SUBJECTS.reduce((acc, subj) => ({
@@ -61,17 +61,22 @@ function HomePage(){
       }
     };
 
+    const handleEssayConstraintChange = (field, value) => {
+      setEssayConstraints(prev => ({ ...prev, [field]: value }));
+    };
+
     const handleOptimize = async () => {
-      // Validação da nota de redação antes de enviar
-      const parsedEssayScore = parseFloat(essayScore);
-      if (isNaN(parsedEssayScore)) {
-          alert("Por favor, preencha uma nota válida para a Redação.");
-          return;
+      const essayMin = parseFloat(essayConstraints.min);
+      const essayMax = parseFloat(essayConstraints.max);
+      const hasInvalidPrecision = [essayMin, essayMax].some(value => Math.abs(value * 10 - Math.round(value * 10)) > 1e-9);
+      if (Number.isNaN(essayMin) || Number.isNaN(essayMax) || essayMin < 4.5 || essayMax > 15 || essayMin > essayMax || hasInvalidPrecision) {
+        alert("Informe limites de Redação entre 4,5 e 15 usando uma casa decimal.");
+        return;
       }
 
       // 1. Construir minSubjects
       const minSubjects = Object.entries(subjectsData)
-        .filter(([_, data]) => data.minimize)
+        .filter(([id, data]) => id !== 'PORT_RED' && data.minimize)
         .map(([id, _]) => id);
 
       // 2. Construir constraints
@@ -98,7 +103,8 @@ function HomePage(){
         foreign_language: language,
         reference_year: referenceYear,
         entry_method: entryMethod,
-        essay_score: parsedEssayScore, // NOVO: Campo obrigatório enviado no payload!
+        essay_constraints: { min: essayMin, max: essayMax },
+        port_red_objective: portRedObjective,
       };
 
       console.log("Enviando Payload:", JSON.stringify(payload, null, 2));
@@ -145,8 +151,10 @@ function HomePage(){
             setLanguage={(e) => setLanguage(e.target.value)}
             entryMethod={entryMethod}
             setEntryMethod={(e) => setEntryMethod(e.target.value)}
-            essayScore={essayScore}
-            setEssayScore={(e) => setEssayScore(e.target.value)}
+            essayConstraints={essayConstraints}
+            handleEssayConstraintChange={handleEssayConstraintChange}
+            portRedObjective={portRedObjective}
+            setPortRedObjective={(e) => setPortRedObjective(e.target.value)}
             handleOptimize={handleOptimize}
             subjects={subjectsData}
             handleSubjectChange={handleSubjectChange}
