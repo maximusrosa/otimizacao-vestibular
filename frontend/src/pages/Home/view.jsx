@@ -13,7 +13,15 @@ const HomeView = ({
     setEntryMethod,
     handleOptimize, 
     subjects, 
-    handleSubjectChange, 
+    handleSubjectChange,
+    yearOptions,
+    courseOptions,
+    languageOptions,
+    entryMethodOptions,
+    isCourseSelectionEnabled,
+    hasReferenceYearSelected,
+    isLoadingCourses,
+    isLoadingSelectionOptions,
 }) => {
     return (
         <div className="container">
@@ -29,17 +37,43 @@ const HomeView = ({
 
             <div className="filters">
                 <div className="field">
-                    <label>Selecione seu curso</label>
+                    <label>Ano</label>
                     <div className="select-wrapper">
-                        <select value={course} onChange={setCourse}></select>
+                        <select
+                            value={referenceYear}
+                            onChange={setReferenceYear}
+                            disabled={isLoadingSelectionOptions || yearOptions.length === 0}
+                        >
+                            <option value="">
+                                {isLoadingSelectionOptions ? 'Carregando opções...' : 'Selecione o ano'}
+                            </option>
+                            {yearOptions.map((yearOption) => (
+                                <option key={yearOption} value={yearOption}>
+                                    {yearOption}
+                                </option>
+                            ))}
+                        </select>
                         <button className="clear">×</button>
                     </div>
                 </div>
 
                 <div className="field">
-                    <label>Ano</label>
+                    <label>Selecione seu curso</label>
                     <div className="select-wrapper">
-                        <select value={referenceYear} onChange={setReferenceYear}></select>
+                        <select value={course} onChange={setCourse} disabled={!isCourseSelectionEnabled}>
+                            <option value="">
+                                {!hasReferenceYearSelected
+                                    ? 'Selecione o ano primeiro'
+                                    : isLoadingCourses
+                                      ? 'Carregando cursos...'
+                                      : 'Selecione o curso'}
+                            </option>
+                            {courseOptions.map((courseOption) => (
+                                <option key={courseOption} value={courseOption}>
+                                    {courseOption}
+                                </option>
+                            ))}
+                        </select>
                         <button className="clear">×</button>
                     </div>
                 </div>
@@ -47,7 +81,16 @@ const HomeView = ({
                 <div className="field">
                     <label>Língua Estrangeira</label>
                     <div className="select-wrapper">
-                        <select value={language} onChange={setLanguage}></select>
+                        <select value={language} onChange={setLanguage} disabled={isLoadingSelectionOptions || languageOptions.length === 0}>
+                            <option value="">
+                                {isLoadingSelectionOptions ? 'Carregando opções...' : 'Selecione a língua'}
+                            </option>
+                            {languageOptions.map((languageOption) => (
+                                <option key={languageOption} value={languageOption}>
+                                    {languageOption}
+                                </option>
+                            ))}
+                        </select>
                         <button className="clear">×</button>
                     </div>
                 </div>
@@ -55,7 +98,16 @@ const HomeView = ({
                 <div className="field">
                     <label>Forma de Acesso</label>
                     <div className="select-wrapper">
-                        <select value={entryMethod} onChange={setEntryMethod}></select>
+                        <select value={entryMethod} onChange={setEntryMethod} disabled={isLoadingSelectionOptions || entryMethodOptions.length === 0}>
+                            <option value="">
+                                {isLoadingSelectionOptions ? 'Carregando opções...' : 'Selecione a forma de acesso'}
+                            </option>
+                            {entryMethodOptions.map((entryMethodOption) => (
+                                <option key={entryMethodOption} value={entryMethodOption}>
+                                    {entryMethodOption}
+                                </option>
+                            ))}
+                        </select>
                         <button className="clear">×</button>
                     </div>
                 </div>

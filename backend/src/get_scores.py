@@ -6,19 +6,13 @@ from .constants import (
 
 
 def _parse_float(text: str) -> float:
-    """Converte número em formato brasileiro para float.
-
-    O separador decimal é sempre a vírgula (2 casas); o separador de milhar
-    varia por ano ('.' em 2025, ',' em 2022). Tratamos o último separador como
-    decimal e removemos os demais (agrupamento de milhar).
-    """
+    """Converte número em formato brasileiro ('1.234,56') para float."""
     text = text.strip()
-    last_sep = max(text.rfind("."), text.rfind(","))
-    if last_sep == -1:
-        return float(text)
-    integer = text[:last_sep].replace(".", "").replace(",", "")
-    frac = text[last_sep + 1:]
-    return float(f"{integer}.{frac}")
+    text = text.replace(",", ".")
+    # Se houver mais de um ponto, removemos o primeiro (que é o separador de milhar)
+    if text.count(".") > 1:
+        text = text.replace(".", "", 1)
+    return float(text)
 
 
 def _parse_std_scores(table) -> dict[int, float]:
@@ -32,7 +26,7 @@ def _parse_std_scores(table) -> dict[int, float]:
         cols = [td.get_text(strip=True) for td in tr.find_all("td")]
         if len(cols) < 2:
             continue
-        hits = int(cols[0])            # Escore (nº de acertos)
+        hits = int(cols[0])                   # Escore (número de acertos)
         scores[hits] = _parse_float(cols[1])  # Escore padronizado
     return scores
 

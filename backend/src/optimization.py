@@ -1,5 +1,5 @@
 import pulp
-from .scripts import utils
+from .utils import readCourseWeights
 from .constants import *
 
 # Objeto de retorno
@@ -27,7 +27,7 @@ def addConstraints(model, x, constraints_dict: dict[str, list[list[str | int]]])
 def optimization(course: str, min_AC: float, std_scores: dict[str, list[float]],
                  constraints_dict: dict[str, list[list[str | int]]], min_subjects: list[str]=SUBJECTS) -> OptimizationResult:
 
-    weights = utils.readCourseWeights(course)
+    weights = readCourseWeights(course)
     
     total_weights = sum(weights[subject] for subject in SUBJECTS)
 

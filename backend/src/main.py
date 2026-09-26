@@ -1,13 +1,13 @@
-from .optimization import optimization, OptimizationResult
+from pydantic import BaseModel
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import Optional
-from .scripts import utils
+from .utils import getGraphData
+from .optimization import optimization
 from .get_scores import get_scores
-from .get_ranking import get_ranking, get_min_AC
+from .get_ranking import get_ranking, get_min_AC, get_available_courses
+from .constants import FOREIGN_LANGUAGES, ENTRY_MODES, YEARS
 
 app = FastAPI()
 
@@ -56,6 +56,26 @@ def health():
     return {"status": "ok"}
 
 
+@app.get("/courses", response_model=list[str])
+def get_courses(reference_year: str):
+    return get_available_courses(reference_year)
+
+
+@app.get("/years", response_model=list[str])
+def get_years():
+    return YEARS
+
+
+@app.get("/foreign-languages", response_model=list[str])
+def get_foreign_languages():
+    return FOREIGN_LANGUAGES
+
+
+@app.get("/entry-modes", response_model=list[str])
+def get_entry_modes():
+    return ENTRY_MODES
+
+
 @app.post("/optimize")
 def optimize(user_data: UserData):
     std_scores = get_scores(user_data.reference_year, user_data.foreign_language)
@@ -64,7 +84,7 @@ def optimize(user_data: UserData):
 
     result = optimization(user_data.course, min_AC, std_scores, user_data.constraints, user_data.min_subjects)
 
-    graphData = utils.getGraphData(int(user_data.reference_year), user_data.course, user_data.entry_method)
+    graphData = getGraphData(int(user_data.reference_year), user_data.course, user_data.entry_method)
 
     # Retorna o dicionário de atributos do objeto OptimizationResult para serialização JSON
     return ReturnedData(result=result.__dict__, graphJson=graphData)

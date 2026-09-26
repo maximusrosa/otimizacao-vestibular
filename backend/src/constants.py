@@ -1,12 +1,21 @@
+from pathlib import Path
+
+
+# Otimização
 MIN_HITS = 1
 MAX_HITS = 15
+INF = float("inf")
+SUBJECTS = ["BIO", "FIS", "QUI", "MAT", "HIS", "LIT", "PORT_RED", "LEM", "GEO"]
 
-SUBJECTS = ["BIO","FIS","QUI","MAT","HIS","LIT","PORT_RED","LEM","GEO"]
 
-WEIGHTS_PATH = "data/course_weights.csv"
-MAPPING_PATH = "data/course_mapping.json"
+# Arquivos de dados
+COURSE_WEIGHTS_PATH = str(Path(__file__).resolve().parent.parent / "data" / "course_weights.csv")
+COURSE_MAPPING_PATH = str(Path(__file__).resolve().parent.parent / "data" / "course_mapping.json")
 
-ENTRY_MODES = ["AC", "LI_EP", "LI_PPI", "LB_EP", "LB_PPI", "LI_PCD", "LB_PCD", "LI_Q", "LB_Q"]
+
+# Opções do formulário
+YEARS = ["2022", "2023", "2024", "2025"]
+FOREIGN_LANGUAGES = ["Inglês", "Espanhol", "Italiano", "Francês", "Alemão"]
 
 # Mapeamento de regex para cada modalidade de ingresso
 ENTRY_MODE_PATTERNS = {
@@ -21,18 +30,18 @@ ENTRY_MODE_PATTERNS = {
     "LB_Q": r"LB_Q"
 }
 
+ENTRY_MODES = list(ENTRY_MODE_PATTERNS.keys())
+
+# Web scraping
+SCORES_URL = "https://www.ufrgs.br/vestibular/cv{year}/histogramas/"
+RANKING_URL = "https://www1.ufrgs.br/PortalEnsino/GraduacaoProcessoSeletivo/index.php/DivulgacaoDadosChamamento"
+
 # Mapeamento de regex para cada situação que conta para a nota de corte
 STATUS_PATTERNS = {
     "Matriculado": r"Matriculado",
     "Lotado em vaga": r"Lotado em vaga",
     "Renunciante": r"Renunciante",
 }
-
-INF = float('inf')
-
-SCORES_URL = "https://www.ufrgs.br/vestibular/cv{year}/histogramas/"
-
-RANKING_URL = "https://www1.ufrgs.br/PortalEnsino/GraduacaoProcessoSeletivo/index.php/DivulgacaoDadosChamamento"
 
 # Mapeamento do nome da disciplina no site para o código interno usado em SUBJECTS
 SUBJECT_NAME_TO_CODE = {
@@ -45,6 +54,3 @@ SUBJECT_NAME_TO_CODE = {
     "Química": "QUI",
     "Biologia": "BIO",
 }
-
-# Línguas estrangeiras disponíveis no site; a escolhida vira o código "LEM"
-FOREIGN_LANGUAGES = ["Inglês", "Espanhol", "Italiano", "Francês", "Alemão"]

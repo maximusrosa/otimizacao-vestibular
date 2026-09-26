@@ -15,6 +15,14 @@ test('fluxo completo: home → otimizar (BIO+GEO) → resultados', async ({ page
   await page.goto('/');
   await expect(page.getByRole('heading', { name: /otimizador de acertos/i })).toBeVisible();
 
+  const filters = page.locator('.filters select');
+  await expect(filters.nth(0)).toBeEnabled();
+  await filters.nth(0).selectOption('2025');
+  await expect(filters.nth(1)).toBeEnabled({ timeout: OPTIMIZE_TIMEOUT });
+  await filters.nth(1).selectOption({ label: 'Ciência da Computação - Bacharelado' });
+  await filters.nth(2).selectOption('Inglês');
+  await filters.nth(3).selectOption('LI_EP');
+
   // Select two subjects to minimize
   await page.locator('#BIO').check();
   await page.locator('#GEO').check();

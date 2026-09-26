@@ -17,7 +17,7 @@ from src.optimization import optimization
 
 EXPECTED_LEN = MAX_HITS - MIN_HITS + 1
 
-LIVE_COURSE = "Ciência da Computação"
+LIVE_COURSE = "Ciência da Computação - Bacharelado"
 LIVE_YEAR = "2025"
 
 _has_chrome = any(
@@ -111,4 +111,3 @@ def test_optimize_full_pipeline_live(in_backend_dir):
     for subject, info in result.chosen_hits.items():
         assert MIN_HITS <= info["num_hits"] <= MAX_HITS, subject
         assert info["EP"] > 0, subject
-

@@ -1,3 +1,4 @@
+import re
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select, WebDriverWait
@@ -5,8 +6,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 from .constants import ENTRY_MODE_PATTERNS, STATUS_PATTERNS, INF, RANKING_URL
-from .scripts.utils import COURSE_MAPPING
-import re
 
 
 def create_driver():
@@ -17,6 +16,46 @@ def create_driver():
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--disable-gpu')
     return webdriver.Chrome(options=chrome_options)
+
+
+# --------- Utilitários ---------
+
+def get_available_courses(year: str, exam: str = "Vestibular") -> list[str]:
+    """
+    Navega até a página de ranking, seleciona o ano e o concurso, 
+    espera o dropdown de cursos carregar e retorna uma lista com os nomes de todos os cursos.
+    """
+    driver = create_driver()
+    wait = WebDriverWait(driver, 10)
+
+    try:
+        driver.get(RANKING_URL)
+
+        # Selecionamos o ano e o concurso para disparar o carregamento dos cursos
+        select_year(driver, wait, year)
+        select_exam(driver, wait, exam)
+
+        # Esperamos o elemento selectCurso aparecer no DOM
+        dropdown_course = wait.until(
+            EC.presence_of_element_located((By.ID, "selectCurso"))
+        )
+        select_element = Select(dropdown_course)
+
+        # Esperamos até que o dropdown tenha opções carregadas via JavaScript
+        wait.until(lambda d: len(select_element.options) > 1)
+
+        # Extraímos o texto de cada opção
+        courses = []
+        
+        # Fazemos um slice [1:] para pular a primeira opção. 
+        # Normalmente a primeira opção (índice 0) é um texto como "Selecione o curso..."
+        for option in select_element.options[1:]: 
+            courses.append(option.text.strip())
+
+        return courses
+
+    finally:
+        driver.quit()
 
 
 # ---------- Seleções ----------
@@ -43,17 +82,8 @@ def select_course(driver, wait, course: str):
     select_course = Select(dropdown_course)
     wait.until(lambda d: len(select_course.options) > 1)
 
-    # O nome do curso no dropdown varia por ano (ex.: "Ciência da Computação"
-    # em 2022 vs. "Ciência da Computação - Bacharelado" em 2025). O front envia
-    # sempre o nome canônico, então resolvemos cada opção pelo COURSE_MAPPING e
-    # escolhemos aquela cujo nome canônico bate com o solicitado.
-    for option in select_course.options:
-        text = option.text.strip()
-        if COURSE_MAPPING.get(text, text) == course:
-            select_course.select_by_visible_text(text)
-            return
-
-    raise RuntimeError(f"Curso não encontrado no dropdown: {course}")
+    #print(f"Foram encontrados {len(select_course.options) - 1} cursos disponíveis.")
+    select_course.select_by_visible_text(course)
 
 
 # ---------- Carregar Dados ----------
@@ -124,8 +154,8 @@ def get_min_AC(ranking: list[list[str]], target_mode: str) -> float:
         status = candidate[7]  # Situação
 
         if pattern.search(entry_mode) and status_pattern.search(status):
-                if score < min_score:
-                    min_score = score
+            if score < min_score:
+                min_score = score
 
     if min_score != INF:
         return min_score
