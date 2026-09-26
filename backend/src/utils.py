@@ -2,12 +2,15 @@ import json
 from .constants import COURSE_WEIGHTS_PATH, COURSE_MAPPING_PATH
 
 
-def readCourseWeights(course):
+def normalizeCourseName(course):
     with open(COURSE_MAPPING_PATH, 'r', encoding='utf-8') as f:
         course_mapping = json.load(f)
     course_mapping = course_mapping["mapping"]
-    # Mapeia o curso se existir no JSON, caso contrário mantém o nome original
-    course = course_mapping.get(course, course)
+    return course_mapping.get(course, course)
+
+
+def readCourseWeights(course):
+    course = normalizeCourseName(course)
 
     with open(COURSE_WEIGHTS_PATH, 'r', encoding='utf-8') as f:
         lines = f.readlines()
@@ -41,6 +44,7 @@ min_AC = {
     }
 
 def getGraphData(reference_year, course, entry_mode):
+    course = normalizeCourseName(course)
     key = (course, entry_mode)
     min_acs = {}
     if key in min_AC:
