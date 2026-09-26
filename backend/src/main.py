@@ -7,7 +7,7 @@ from .utils import getGraphData
 from .optimization import optimization
 from .get_scores import get_scores
 from .get_ranking import get_ranking, get_min_AC, get_available_courses
-from .constants import FOREIGN_LANGUAGES, ENTRY_MODES
+from .constants import FOREIGN_LANGUAGES, ENTRY_MODES, YEARS
 
 app = FastAPI()
 
@@ -59,6 +59,11 @@ def health():
 @app.get("/courses", response_model=list[str])
 def get_courses(reference_year: str):
     return get_available_courses(reference_year)
+
+
+@app.get("/years", response_model=list[str])
+def get_years():
+    return YEARS
 
 
 @app.get("/foreign-languages", response_model=list[str])

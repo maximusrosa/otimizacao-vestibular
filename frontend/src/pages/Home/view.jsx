@@ -39,8 +39,14 @@ const HomeView = ({
                 <div className="field">
                     <label>Ano</label>
                     <div className="select-wrapper">
-                        <select value={referenceYear} onChange={setReferenceYear}>
-                            <option value="">Selecione o ano</option>
+                        <select
+                            value={referenceYear}
+                            onChange={setReferenceYear}
+                            disabled={isLoadingSelectionOptions || yearOptions.length === 0}
+                        >
+                            <option value="">
+                                {isLoadingSelectionOptions ? 'Carregando opções...' : 'Selecione o ano'}
+                            </option>
                             {yearOptions.map((yearOption) => (
                                 <option key={yearOption} value={yearOption}>
                                     {yearOption}
