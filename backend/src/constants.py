@@ -5,7 +5,7 @@ from pathlib import Path
 MIN_HITS = 1
 MAX_HITS = 15
 INF = float("inf")
-SUBJECTS = ["BIO", "FIS", "QUI", "MAT", "HIS", "LIT", "PORT_RED", "LEM", "GEO"]
+SUBJECTS = ["BIO", "FIS", "QUI", "MAT", "GEO", "HIS", "LIT", "PORT_RED", "LEM"]
 
 
 # Arquivos de dados
@@ -14,7 +14,7 @@ COURSE_MAPPING_PATH = str(Path(__file__).resolve().parent.parent / "data" / "cou
 
 
 # Opções do formulário
-YEARS = ["2022", "2023", "2024", "2025"]
+YEARS = ["2025", "2024", "2023", "2022"]
 FOREIGN_LANGUAGES = ["Inglês", "Espanhol", "Italiano", "Francês", "Alemão"]
 
 # Mapeamento de regex para cada modalidade de ingresso
