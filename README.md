@@ -217,5 +217,9 @@ Recebe curso, restrições, matérias a minimizar, ano de referência e modalida
 - **Escores padronizados:** `https://www.ufrgs.br/vestibular/cv{ano}/histogramas/`
 - **Ranking / chamamento:** `https://www1.ufrgs.br/PortalEnsino/GraduacaoProcessoSeletivo/index.php/DivulgacaoDadosChamamento`
 
-</content>
-</invoke>
+## Licença
+
+Copyright © 2026 Maximus Borges. Todos os direitos reservados.
+
+Esse projeto é proprietário. Nenhuma permissão é concedida para copiar, modificar, redistribuir ou usar este software sem permissão escrita explícita.
+Ver [LICENSE](./LICENSE).
