@@ -12,12 +12,16 @@ FROM python:3.11-slim
 # --no-install-recommends, então suas dependências ficam marcadas como "auto" e
 # o autoremove as remove junto; purgar gnupg também derruba o Chrome por dependência.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        wget gnupg curl \
+    ca-certificates wget gnupg curl \
     && mkdir -p /etc/apt/keyrings \
     && wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg \
     && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
     && apt-get update && apt-get install -y --no-install-recommends google-chrome-stable \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# UFRGS currently omits this intermediate from its TLS chain.
+COPY certs/rnp-icpedu-gr46-ov-tls-ca-2025.crt /usr/local/share/ca-certificates/
+RUN update-ca-certificates
 
 WORKDIR /app
 

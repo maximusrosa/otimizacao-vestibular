@@ -1,8 +1,25 @@
+import os
+import ssl
+from pathlib import Path
+
 import requests
 from bs4 import BeautifulSoup
 from .constants import (
     SUBJECTS, MIN_HITS, MAX_HITS, SCORES_URL, SUBJECT_NAME_TO_CODE, FOREIGN_LANGUAGES
 )
+
+
+def _ca_bundle() -> str | bool:
+    """Return configured or operating-system CA bundle."""
+    configured_bundle = os.environ.get("REQUESTS_CA_BUNDLE")
+    if configured_bundle:
+        return configured_bundle
+
+    system_bundle = ssl.get_default_verify_paths().cafile
+    if system_bundle and Path(system_bundle).is_file():
+        return system_bundle
+
+    return True
 
 
 def _parse_float(text: str) -> float:
@@ -96,7 +113,13 @@ def parse_scores(html: str, foreign_language: str) -> dict[str, list[float]]:
 
 def get_scores(year: str, foreign_language: str) -> dict[str, list[float]]:
     """Baixa a página de histogramas do ano e extrai os escores padronizados."""
-    html = requests.get(SCORES_URL.format(year=year)).text
+    response = requests.get(
+        SCORES_URL.format(year=year),
+        timeout=30,
+        verify=_ca_bundle(),
+    )
+    response.raise_for_status()
+    html = response.text
     return parse_scores(html, foreign_language)
 
 
