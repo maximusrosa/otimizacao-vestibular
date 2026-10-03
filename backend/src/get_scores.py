@@ -1,11 +1,20 @@
 import os
 import ssl
+from functools import lru_cache
 from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
 from .constants import (
-    SUBJECTS, MIN_HITS, MAX_HITS, SCORES_URL, SUBJECT_NAME_TO_CODE, FOREIGN_LANGUAGES
+    FOREIGN_LANGUAGES,
+    MAX_HITS,
+    MIN_HITS,
+    SCORES_URL,
+    SUBJECT_NAME_TO_CODE,
+    SUBJECTS,
 )
 
 
@@ -20,6 +29,36 @@ def _ca_bundle() -> str | bool:
         return system_bundle
 
     return True
+
+
+def _retrying_session() -> requests.Session:
+    """Cria uma sessão que tolera falhas transitórias da UFRGS."""
+    retry = Retry(
+        total=5,
+        connect=5,
+        read=5,
+        status=5,
+        other=5,
+        backoff_factor=0.5,
+        status_forcelist=(429, 500, 502, 503, 504),
+        allowed_methods=frozenset({"GET"}),
+    )
+    session = requests.Session()
+    session.mount("https://", HTTPAdapter(max_retries=retry))
+    return session
+
+
+@lru_cache(maxsize=8)
+def _download_scores_html(year: str) -> str:
+    """Baixa e guarda HTML estático para reduzir dependência da UFRGS."""
+    with _retrying_session() as session:
+        response = session.get(
+            SCORES_URL.format(year=year),
+            timeout=(10, 30),
+            verify=_ca_bundle(),
+        )
+    response.raise_for_status()
+    return response.text
 
 
 def _parse_float(text: str) -> float:
@@ -113,14 +152,7 @@ def parse_scores(html: str, foreign_language: str) -> dict[str, list[float]]:
 
 def get_scores(year: str, foreign_language: str) -> dict[str, list[float]]:
     """Baixa a página de histogramas do ano e extrai os escores padronizados."""
-    response = requests.get(
-        SCORES_URL.format(year=year),
-        timeout=30,
-        verify=_ca_bundle(),
-    )
-    response.raise_for_status()
-    html = response.text
-    return parse_scores(html, foreign_language)
+    return parse_scores(_download_scores_html(year), foreign_language)
 
 
 def main():
