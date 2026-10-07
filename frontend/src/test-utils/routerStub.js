@@ -1,6 +1,7 @@
 // Stub de react-router-dom para o jest (CRA 5 não segue o campo "exports" do
 // react-router v7). Fornece apenas o que o app usa nos testes.
 const navigate = jest.fn();
+let locationState = {};
 
 // Componentes de roteamento: renderizam os filhos sem lógica de rota real.
 const BrowserRouter = ({ children }) => children;
@@ -14,10 +15,11 @@ const Route = ({ element }) => element || null;
 
 module.exports = {
   useNavigate: () => navigate,
-  useLocation: () => ({ state: {} }),
+  useLocation: () => ({ state: locationState }),
   BrowserRouter,
   MemoryRouter,
   Routes,
   Route,
   __navigate: navigate, // acesso ao mock nos testes
+  __setLocationState: (state) => { locationState = state || {}; },
 };

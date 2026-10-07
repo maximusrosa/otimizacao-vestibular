@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 
@@ -16,6 +17,9 @@ COURSE_MAPPING_PATH = str(DATA_DIR / "course_mapping.json")
 # Alias mantidos para compatibilidade com os scripts de atualização anual.
 WEIGHTS_PATH = COURSE_WEIGHTS_PATH
 MAPPING_PATH = COURSE_MAPPING_PATH
+RANKING_DB_PATH = Path(os.environ.get("RANKING_DB_PATH", DATA_DIR / "rankings.db"))
+RANKING_MIN_DETAIL_YEAR = 2022
+RANKING_MIN_COMPLETENESS_RATIO = float(os.environ.get("RANKING_MIN_COMPLETENESS_RATIO", "0.8"))
 
 
 # Opções do formulário

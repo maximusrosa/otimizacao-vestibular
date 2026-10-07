@@ -168,7 +168,13 @@ function HomePage() {
         alert('Erro na otimização. Verifique os dados enviados.');
         return;
       }
-      navigate('/resultados', { state: { results: result.result, historicalData: result.graphJson } });
+      navigate('/resultados', {
+        state: {
+          results: result.result,
+          historicalData: result.graphJson,
+          simulation: { course, referenceYear, entryMethod },
+        },
+      });
     } catch (error) {
       alert('Erro na requisição. Verifique se o backend está rodando.');
       console.error(error);

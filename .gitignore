@@ -210,6 +210,10 @@ yarn-debug.log*
 yarn-error.log*
 
 *.last-run.json
+rankings.db
+rankings.db-shm
+rankings.db-wal
+backend/data/backups/
 
 #################################################################################################
 

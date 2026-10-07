@@ -8,9 +8,33 @@
   margin-top: 48px;
 }
 
+.ranking-heading {
+  align-items: end;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 12px;
+}
+
+.ranking-heading h2 {
+  margin: 0 0 4px;
+}
+
+.ranking-filter {
+  min-width: 220px;
+}
+
+.ranking-freshness,
+.ranking-source {
+  color: #666;
+  font-size: 12px;
+  margin: 0;
+}
+
 .ranking-table-wrapper {
-  overflow-x: auto;
-  margin-bottom: 48px !important; /* Sobrescreve margem padrão */
+  height: 560px;
+  overflow: auto;
+  margin-bottom: 12px !important;
 }
 
 .ranking-table {
@@ -24,6 +48,72 @@
   background-color: #f9f9f9;
 }
 
+.ranking-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.ranking-table td:nth-child(3) {
+  min-width: 220px;
+  text-align: left;
+}
+
+.ranking-pagination {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.ranking-pagination button {
+  background: #1f77b4;
+  border: 0;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  min-height: 34px;
+  padding: 6px 12px;
+}
+
+.ranking-pagination button:disabled {
+  background: #aaa;
+  cursor: default;
+}
+
+.ranking-message {
+  padding: 24px 0;
+  text-align: center;
+}
+
+.ranking-error {
+  color: #a52828;
+}
+
+.ranking-source {
+  margin-bottom: 48px;
+}
+
+.chart-wrapper {
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+  width: 100%;
+}
+
 .historical-data-graph {
   margin-bottom: 35px;
+}
+
+@media (max-width: 768px) {
+  .ranking-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .ranking-pagination {
+    justify-content: flex-start;
+  }
 }

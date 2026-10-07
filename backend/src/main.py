@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from typing import Literal
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -50,6 +50,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def prevent_candidate_indexing(request: Request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith("/rankings/"):
+        response.headers["X-Robots-Tag"] = "noindex, nofollow"
+        response.headers["Cache-Control"] = "no-store"
+    return response
 
 # ==========================================
 # SCHEMAS
@@ -112,6 +121,20 @@ def get_foreign_languages():
 @app.get("/entry-modes", response_model=list[str])
 def get_entry_modes():
     return ENTRY_MODES
+
+
+@app.get("/rankings/candidates")
+def get_ranking_candidates(
+    year: int,
+    course: str,
+    entry_mode: str | None = None,
+    anchor_score: float | None = None,
+    offset: int | None = Query(default=None, ge=0),
+    limit: int = Query(default=25, ge=1, le=100),
+):
+    if entry_mode and entry_mode not in ENTRY_MODES:
+        raise HTTPException(status_code=400, detail="Modalidade de ingresso inválida.")
+    return database.get_candidate_window(year, course, entry_mode, anchor_score, offset, limit)
 
 
 @app.post("/optimize")

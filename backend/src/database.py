@@ -1,26 +1,23 @@
 import json
-import re
+import os
 
-from .constants import DATA_DIR, ENTRY_MODE_PATTERNS, STATUS_PATTERNS
+from .constants import DATA_DIR, RANKING_MIN_DETAIL_YEAR
+from .ranking_repository import repository as ranking_repository
 
 # ==========================================
 # VARIÁVEIS GLOBAIS DE MEMÓRIA
 # ==========================================
 DB_ESCORES = {}
-DB_CUTOFFS = {}
-DB_RANKINGS_COMPLETOS = []
 DB_REDACAO_STATS = {}
 
 # ==========================================
 # FUNÇÕES DE STARTUP E SHUTDOWN
 # ==========================================
 def load_databases():
-    """Carrega os tres conjuntos de dados e pre-calcula notas de corte."""
-    global DB_ESCORES, DB_CUTOFFS, DB_RANKINGS_COMPLETOS, DB_REDACAO_STATS
+    """Carrega dados anuais em memória e inicializa o ranking persistente."""
+    global DB_ESCORES, DB_REDACAO_STATS
     print("Iniciando carregamento dos dados para a memória...")
     DB_ESCORES = {}
-    DB_CUTOFFS = {}
-    DB_RANKINGS_COMPLETOS = []
     DB_REDACAO_STATS = {}
 
     # Carrega e PREPARA os Escores
@@ -49,46 +46,14 @@ def load_databases():
     except FileNotFoundError:
         print(" [AVISO] redacao_stats.json não encontrado.")
 
-    # Carrega os Rankings e pré-calcula Notas de Corte
-    try:
-        with open(DATA_DIR / "rankings_completos.json", "r", encoding="utf-8") as f:
-            DB_RANKINGS_COMPLETOS = json.load(f)
-            
-        status_regex = re.compile("|".join(STATUS_PATTERNS.values()))
-        mode_regexes = {mode: re.compile(pat) for mode, pat in ENTRY_MODE_PATTERNS.items()}
-        
-        for cand in DB_RANKINGS_COMPLETOS:
-            ano = str(cand["ano"])
-            curso = cand["curso"]
-            nota = float(cand["nota_final"])
-            modalidade = cand["modalidade"]
-            situacao = cand["situacao"]
-            
-            if not status_regex.search(situacao):
-                continue
-                
-            for mode, regex in mode_regexes.items():
-                if regex.search(modalidade):
-                    if ano not in DB_CUTOFFS: DB_CUTOFFS[ano] = {}
-                    if curso not in DB_CUTOFFS[ano]: DB_CUTOFFS[ano][curso] = {}
-                    if mode not in DB_CUTOFFS[ano][curso]: DB_CUTOFFS[ano][curso][mode] = float('inf')
-                    
-                    if nota < DB_CUTOFFS[ano][curso][mode]:
-                        DB_CUTOFFS[ano][curso][mode] = nota
-                    break
-
-        print(" -> Notas de corte pré-calculadas com sucesso!")
-        
-    except FileNotFoundError:
-        print(" [AVISO] rankings_completos.json não encontrado.")
+    ranking_repository.initialize(DATA_DIR / "rankings_completos.json")
+    print(" -> Banco persistente de rankings inicializado.")
 
 
 def clear_databases():
     """Libera as estruturas globais durante o encerramento da API."""
-    global DB_ESCORES, DB_CUTOFFS, DB_RANKINGS_COMPLETOS, DB_REDACAO_STATS
+    global DB_ESCORES, DB_REDACAO_STATS
     DB_ESCORES.clear()
-    DB_CUTOFFS.clear()
-    DB_RANKINGS_COMPLETOS.clear()
     DB_REDACAO_STATS.clear()
 
 
@@ -118,13 +83,7 @@ def get_scores_from_memory(year: str, foreign_language: str) -> dict[str, list[f
     return std_scores
 
 def get_min_ac_from_memory(year: str, course: str, entry_mode: str) -> float:
-    try:
-        nota = DB_CUTOFFS[year][course][entry_mode]
-        if nota == float('inf'):
-            raise ValueError
-        return nota
-    except (KeyError, ValueError):
-        raise RuntimeError(f"Nenhuma nota de corte encontrada para {course} ({entry_mode}) em {year}.")
+    return ranking_repository.get_cutoff(year, course, entry_mode)
 
 
 def get_essay_stats_from_memory(year: str) -> dict:
@@ -140,38 +99,56 @@ def get_essay_stats_from_memory(year: str) -> dict:
     return stats
 
 
-def get_data_status() -> dict[str, list[str]]:
+def get_data_status() -> dict:
     """Informa quais anos estao disponiveis em cada conjunto da base."""
-    ranking_years = sorted({str(candidate["ano"]) for candidate in DB_RANKINGS_COMPLETOS}, key=int)
-    return {
+    status = {
         "scores_years": sorted(DB_ESCORES.keys(), key=int),
-        "ranking_years": ranking_years,
+        "ranking_years": sorted(ranking_repository.available_years(), key=int),
+        "detailed_ranking_years": sorted(ranking_repository.available_years(detailed_only=True), key=int),
         "essay_years": sorted(DB_REDACAO_STATS.keys(), key=int),
+        "ranking_sync_enabled": os.environ.get("RANKING_SYNC_ENABLED", "false").lower() == "true",
+        "ranking_sync_years": [
+            year.strip() for year in os.environ.get("RANKING_SYNC_YEARS", "2025").split(",") if year.strip()
+        ],
+        "ranking_sync_time": os.environ.get("RANKING_SYNC_TIME", "05:00"),
+        "ranking_sync_timezone": os.environ.get("TZ", "America/Sao_Paulo"),
     }
+    status.update(ranking_repository.status())
+    return status
 
 
 def get_available_years() -> list[str]:
     """Retorna somente anos completos, prontos para uma otimização consistente."""
-    ranking_years = set(DB_CUTOFFS)
+    ranking_years = {
+        year for year in ranking_repository.available_years() if int(year) >= RANKING_MIN_DETAIL_YEAR
+    }
     complete_years = set(DB_ESCORES) & ranking_years & set(DB_REDACAO_STATS)
     return sorted(complete_years, key=int, reverse=True)
 
 
 def get_courses_from_memory(year: str) -> list[str]:
     """Lista os cursos que possuem ao menos uma nota de corte no ano informado."""
-    return sorted(DB_CUTOFFS.get(year, {}).keys())
+    return ranking_repository.courses(year)
 
 
 def get_cutoff_graph_from_memory(reference_year: int, course: str, entry_mode: str, years_back: int = 5) -> dict[int, float]:
-    """Monta a serie historica usando as mesmas notas de corte da otimizacao."""
-    graph_data = {}
-    first_year = reference_year - years_back
+    """Monta a série histórica a partir do último estado confirmado no SQLite."""
+    return ranking_repository.cutoff_graph(reference_year, course, entry_mode, years_back)
 
-    for year in range(first_year, reference_year + 1):
-        year_data = DB_CUTOFFS.get(str(year), {})
-        course_data = year_data.get(course, {})
-        cutoff = course_data.get(entry_mode)
-        if cutoff is not None and cutoff != float("inf"):
-            graph_data[year] = cutoff
 
-    return graph_data
+def get_candidate_window(
+    year: int,
+    course: str,
+    entry_mode: str | None,
+    anchor_score: float | None,
+    offset: int | None,
+    limit: int,
+) -> dict:
+    return ranking_repository.candidate_window(
+        year,
+        course,
+        entry_mode=entry_mode,
+        anchor_score=anchor_score,
+        offset=offset,
+        limit=limit,
+    )

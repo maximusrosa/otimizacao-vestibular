@@ -15,6 +15,8 @@ from src.essay_scores import build_essay_score_options, fetch_essay_stats
 from src.get_ranking import get_ranking, get_min_AC
 from src.get_scores import get_scores
 from src.optimization import optimization
+from src.save_rankings import create_driver, fetch_course_candidates, select_year_and_exam
+from selenium.webdriver.support.ui import WebDriverWait
 
 EXPECTED_LEN = MAX_HITS - MIN_HITS + 1
 
@@ -88,6 +90,27 @@ def test_get_ranking_live_end_to_end():
     min_ac = get_min_AC(ranking, "AC")
     assert isinstance(min_ac, float)
     assert 0 < min_ac < 1000
+
+
+@pytest.mark.integration
+@requires_chrome
+def test_detailed_ranking_parser_live():
+    """Valida no site real o contrato de colunas usado pela sincronização diária."""
+    driver = create_driver()
+    try:
+        courses = select_year_and_exam(driver, WebDriverWait(driver, 15), int(LIVE_YEAR))
+        course = LIVE_COURSE if LIVE_COURSE in courses else courses[0]
+        _canonical, candidates = fetch_course_candidates(driver, int(LIVE_YEAR), course)
+    finally:
+        driver.quit()
+
+    assert candidates
+    expected = {
+        "candidate_key", "source_classification", "name", "final_score",
+        "remapped_vacancy", "competition_vacancies", "entry_vacancy",
+        "entry_mode", "status", "status_date",
+    }
+    assert expected <= set(candidates[0])
 
 
 @pytest.mark.integration

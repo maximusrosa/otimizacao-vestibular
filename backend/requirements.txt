@@ -5,3 +5,5 @@ selenium
 beautifulsoup4
 requests
 webdriver-manager
+APScheduler>=3.11,<4
+tzdata

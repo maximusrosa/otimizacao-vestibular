@@ -68,8 +68,8 @@ AC = SOMA(peso_i) / SOMA(peso_i / EP_i)
 
 1. O frontend envia curso, ano, modalidade, língua estrangeira, limites de
    Português e Redação e o objetivo da prova conjunta.
-2. O backend consulta em memoria os escores objetivos, a nota de corte e as
-   estatísticas da Redação do ano.
+2. O backend consulta em memória os escores objetivos e as estatísticas da
+   Redação, e obtém a nota de corte do último snapshot confirmado no SQLite.
 3. O backend cria a grade de Redação em passos de `0,1` dentro da faixa válida.
 4. Para cada nota da grade e cada quantidade de acertos em Português, calcula
    previamente `EP_REDACAO`, `EP_PORT_RED` e o inverso usado no AC.
@@ -83,20 +83,25 @@ AC = SOMA(peso_i) / SOMA(peso_i / EP_i)
 ```text
 Frontend React
     |
-    | POST /optimize
+    | POST /optimize e GET /rankings/candidates
     v
 FastAPI
-    |-- database.py                  dados JSON carregados em memória
+    |-- database.py                  escores em memória e rankings no SQLite
     |-- essay_scores.py              scraping e cálculo da Redação
     |-- optimization.py              modelo PuLP/CBC
+    |-- ranking_repository.py        estado, histórico, locks e backups
+    |-- sync_rankings.py             sincronização manual de candidatos
+    |-- ranking_scheduler.py         agendamento diário com APScheduler
     `-- update_year_data.py          atualização anual validada
             |-- escores objetivos (requests + BeautifulSoup)
-            |-- estatísticas da Redação (requests + BeautifulSoup)
-            `-- rankings (Selenium + Chrome)
+            `-- estatísticas da Redação (requests + BeautifulSoup)
 ```
 
-Os arquivos JSON sao usados pela API. Os CSVs equivalentes sao mantidos para
-auditoria e inspeção manual.
+Escores objetivos e estatísticas de Redação mudam uma vez por edição e
+continuam versionados como JSON/CSV. Rankings são mutáveis e ficam em
+`rankings.db`, num volume Docker compartilhado entre API e sincronizador. Cada
+consulta abre o SQLite, portanto uma sincronização publicada passa a valer sem
+reiniciar a API.
 
 ## Dados
 
@@ -106,14 +111,20 @@ Os arquivos ficam em `backend/data/`:
 |---|---|
 | `escores_padronizados.json/.csv` | EP por ano, prova e quantidade de acertos |
 | `redacao_stats.json/.csv` | média, desvio padrão e volume de redações por ano |
-| `rankings_completos.json/.csv` | candidatos usados para obter as notas de corte |
+| `rankings_completos.json/.csv` | bootstrap legado anônimo, mantido temporariamente |
 | `course_weights.csv` | pesos das provas por curso |
 | `course_mapping.json` | nomes históricos normalizados dos cursos |
 
-No início, `database.load_databases()` carrega os JSONs, transforma os escores
-em listas ordenadas de 1 a 15 acertos e pré-calcula a menor nota classificada
-por ano, curso e modalidade. Assim, uma requisição de otimização não depende de
-scraping em tempo real.
+O banco `rankings.db` não é versionado. Ele contém o estado atual dos candidatos,
+histórico somente dos campos alterados, execuções por curso, erros, metadados e
+o lock de exclusão mútua. A inscrição publicada pela UFRGS serve apenas para
+gerar uma chave SHA-256; a inscrição original não é gravada nem exposta.
+
+Na primeira inicialização, o JSON legado é importado uma única vez como
+bootstrap anônimo. Um snapshot detalhado de um curso substitui os registros
+legados correspondentes. Somente vestibulares de 2022 em diante recebem
+backfill de nomes e datas; anos anteriores permanecem apenas para dados
+agregados legados.
 
 ## Atualização anual segura
 
@@ -137,23 +148,78 @@ intencional, use:
 python -m src.update_year_data --year 2026 --force
 ```
 
-O procedimento executa estas protecoes:
+O procedimento executa estas proteções:
 
-1. coleta as tres fontes antes de alterar a base;
+1. coleta as duas fontes anuais antes de alterar a base;
 2. exige todas as provas e exatamente os escores de 1 a 15 acertos;
 3. rejeita escores objetivos menores ou iguais a zero;
-4. exige ranking não vazio e sem registros de outro ano;
-5. exige média e desvio válido da Redação para o ano solicitado;
-6. cria uma copia em `data/backups/AAAAmmdd-HHMMSS/`;
-7. grava arquivos temporários e usa substituição atômica nos arquivos finais.
+4. exige média e desvio válido da Redação para o ano solicitado;
+5. cria uma cópia em `data/backups/AAAAmmdd-HHMMSS/`;
+6. grava arquivos temporários e usa substituição atômica nos arquivos finais.
 
-Depois da publicação, reinicie o backend para recarregar os JSONs. Confirme os
-anos disponíveis em `GET /data/status`.
+Depois da publicação anual, reinicie o backend para recarregar os JSONs de
+escores e Redação. Confirme os anos disponíveis em `GET /data/status`.
 
 O comando é deliberadamente acionado uma vez por ano: as páginas de origem
 podem mudar e a etapa de `--dry-run` permite detectar essa mudança antes da
-publicação. Ele também pode ser chamado por uma rotina de CI agendada, mantendo
-as mesmas validações.
+publicação.
+
+## Sincronização diária dos rankings
+
+O sincronizador usa uma sessão Selenium por ano, identifica colunas pelo texto
+normalizado do cabeçalho e tenta cada curso até três vezes, com espera
+progressiva. Uma coluna obrigatória ausente invalida o curso. Cada curso é
+validado em staging e publicado em uma transação SQLite independente.
+
+Proteções aplicadas:
+
+1. lock único compartilhado entre execução agendada e manual;
+2. backup consistente do SQLite antes da execução, com retenção de 30 dias;
+3. rejeição de snapshots vazios, incompletos, duplicados ou menores que 80% do
+   último estado, salvo uso explícito de `--force`;
+4. preservação do snapshot anterior quando um curso falha;
+5. inativação somente após duas coletas completas consecutivas sem o candidato;
+6. histórico apenas quando nota, situação, data ou campos de vagas mudam;
+7. separação entre `status_date`, que é somente a data publicada pela UFRGS, e
+   `collected_at`, que registra o instante da coleta.
+
+Comandos manuais, executados a partir de `backend/`:
+
+```bash
+# Anos definidos em RANKING_SYNC_YEARS
+python -m src.sync_rankings
+
+# Um ou mais anos específicos
+python -m src.sync_rankings --year 2025 --year 2026
+
+# Coleta e valida sem publicar candidatos
+python -m src.sync_rankings --year 2025 --dry-run
+
+# Retoma, pulando cursos já concluídos no dia
+python -m src.sync_rankings --year 2025 --resume
+
+# Backfill retomável de 2022 até o maior ano configurado
+python -m src.sync_rankings --from-year 2022 --resume
+```
+
+`--force` ignora somente a proteção de queda de 80% e deve ser usado após
+verificação manual da fonte. O lock continua valendo.
+
+No Docker Compose, o serviço `ranking-sync` usa a mesma imagem do backend e o
+mesmo volume em `/app/runtime`. A configuração padrão é:
+
+```dotenv
+RANKING_SYNC_ENABLED=false
+RANKING_SYNC_YEARS=2025
+RANKING_SYNC_TIME=05:00
+TZ=America/Sao_Paulo
+RANKING_DB_PATH=/app/runtime/rankings.db
+```
+
+Com a flag desabilitada, o container permanece saudável e não cria novos
+agendamentos. Para alterar flag, anos ou horário, recrie o serviço. A ativação
+recomendada é feita somente depois de criar o volume, executar um `--dry-run`,
+concluir o backfill desde 2022 e comparar os cortes produzidos.
 
 ## Fontes
 
@@ -170,9 +236,28 @@ Retorna `{"status": "ok"}`.
 
 ### `GET /data/status`
 
-Lista os anos carregados separadamente para escores, rankings e Redação. Isso
-permite verificar se um ano está completo antes de disponibilizá-lo no
-frontend.
+Lista os anos carregados separadamente para escores, rankings e Redação, além
+da última execução, último sucesso, cursos processados, falhas, duração
+derivável pelos timestamps, anos ativos e data de situação mais recente.
+
+### `GET /rankings/candidates`
+
+Consulta uma janela do ranking confirmado. Parâmetros:
+
+| Campo | Obrigatório | Descrição |
+|---|---|---|
+| `year` | sim | Ano do vestibular |
+| `course` | sim | Curso canônico |
+| `entry_mode` | não | Modalidade; omitida retorna o curso inteiro |
+| `anchor_score` | não | Centraliza a janela na posição estimada da nota |
+| `offset` | não | Início explícito da página; tem precedência sobre a centralização |
+| `limit` | não | 25 por padrão, máximo 100 |
+
+A resposta contém `items`, `total`, `offset`, `limit`, `anchor_index`,
+`simulated_position` e `last_synced_at`. Candidatos empatados com a simulação
+ficam antes dela, produzindo uma estimativa conservadora. A inscrição e a
+chave interna nunca são retornadas. A rota envia `X-Robots-Tag: noindex,
+nofollow` e `Cache-Control: no-store`.
 
 ### `POST /optimize`
 
@@ -247,6 +332,10 @@ docker compose up --build
 - backend: `http://localhost:8000`;
 - documentação interativa: `http://localhost:8000/docs`.
 
+O scheduler inicia desabilitado. Para ativá-lo, defina
+`RANKING_SYNC_ENABLED=true` no ambiente do Compose e recrie o serviço
+`ranking-sync`.
+
 ### Desenvolvimento local
 
 Backend, a partir da raiz do projeto:
@@ -277,11 +366,11 @@ A partir de `backend/`:
 python -m pytest
 ```
 
-Os testes unitários cobrem parsing de escores e rankings, grade decimal da
-Redação, composição 50/50, escolha conjunta do solver e validações da atualização
-anual. Testes que acessam páginas
-reais ou um navegador são marcados como `integration` e ficam desabilitados por
-padrão:
+Os testes unitários cobrem parsing por cabeçalho, grade decimal da Redação,
+composição 50/50, escolha conjunta do solver, transações do ranking, histórico,
+inativação, lock, agendamento, paginação, empates e validações das atualizações.
+Testes que acessam páginas reais ou um navegador são marcados como `integration`
+e ficam desabilitados por padrão:
 
 ```bash
 python -m pytest -m integration
@@ -300,6 +389,14 @@ npm test
 - backend: Python, FastAPI, PuLP/CBC, BeautifulSoup e Selenium;
 - frontend: React, React Router e Recharts;
 - infraestrutura: Docker, Docker Compose e nginx.
+
+## Privacidade e retenção
+
+Os nomes e dados de chamamento são coletados da página pública da UFRGS com a
+finalidade de apresentar o ranking e atualizar os cortes. Não existe endpoint
+de exportação em massa. O histórico guarda apenas mudanças relevantes; backups
+locais expiram após 30 dias. Antes da publicação do sistema, a exibição de nomes
+completos e os prazos de retenção devem passar por revisão de privacidade/LGPD.
 ### E2E (Playwright)
 
 Requer o stack Docker rodando (`docker compose up -d`). A partir de `frontend/`:
@@ -316,14 +413,6 @@ npx playwright test --headed
 
 # Relatório HTML após a execução
 npx playwright show-report
-```
-
-### Rodando os módulos isoladamente
-
-```bash
-python -m src.get_scores
-
-python -m src.get_ranking
 ```
 
 ## Licença

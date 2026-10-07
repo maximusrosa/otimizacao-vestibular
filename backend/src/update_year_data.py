@@ -19,15 +19,12 @@ from .constants import (
     SUBJECT_NAME_TO_CODE,
 )
 from .essay_scores import fetch_essay_stats
-from .save_rankings import fetch_rankings_for_year
 from .save_scores import parse_all_scores
 
 
 DATA_DIR = APP_DATA_DIR
 SCORES_JSON = DATA_DIR / "escores_padronizados.json"
 SCORES_CSV = DATA_DIR / "escores_padronizados.csv"
-RANKINGS_JSON = DATA_DIR / "rankings_completos.json"
-RANKINGS_CSV = DATA_DIR / "rankings_completos.csv"
 ESSAY_JSON = DATA_DIR / "redacao_stats.json"
 ESSAY_CSV = DATA_DIR / "redacao_stats.csv"
 
@@ -161,11 +158,9 @@ def validate_essay_for_year(year: str, essay_data: dict):
 def update_year_data(year: str, dry_run: bool = False, force: bool = False):
     """Executa o fluxo anual completo e publica os arquivos apenas ao final."""
     scores_data = load_json(SCORES_JSON, {})
-    rankings_data = load_json(RANKINGS_JSON, [])
     essay_data = load_json(ESSAY_JSON, {})
 
-    ranking_year_exists = any(str(row["ano"]) == year for row in rankings_data)
-    if not force and (year in scores_data or ranking_year_exists or year in essay_data):
+    if not force and (year in scores_data or year in essay_data):
         raise RuntimeError(f"O ano {year} já existe na base. Use --force para substituir.")
 
     # Toda coleta e validacao acontece antes do primeiro arquivo oficial ser
@@ -177,23 +172,17 @@ def update_year_data(year: str, dry_run: bool = False, force: bool = False):
     fetched_essay_data = fetch_essay_stats()
     validate_essay_for_year(year, fetched_essay_data)
 
-    print(f"Baixando rankings de {year}...")
-    rankings_for_year = fetch_rankings_for_year(year)
-    validate_rankings_for_year(year, rankings_for_year)
-
     updated_scores = {**scores_data, year: scores_for_year}
-    updated_rankings = [row for row in rankings_data if str(row["ano"]) != year] + rankings_for_year
     updated_essay = {**essay_data, **fetched_essay_data}
 
     validate_scores_for_year(year, updated_scores[year])
-    validate_rankings_for_year(year, [row for row in updated_rankings if str(row["ano"]) == year])
     validate_essay_for_year(year, updated_essay)
 
     if dry_run:
         print("Dry-run concluído: dados válidos, nenhum arquivo foi alterado.")
         return
 
-    backup_dir = backup_existing_files([SCORES_JSON, SCORES_CSV, RANKINGS_JSON, RANKINGS_CSV, ESSAY_JSON, ESSAY_CSV])
+    backup_dir = backup_existing_files([SCORES_JSON, SCORES_CSV, ESSAY_JSON, ESSAY_CSV])
     print(f"Backup criado em {backup_dir}")
 
     # os.replace e atomico no mesmo volume: leitores veem o arquivo antigo ou
@@ -203,13 +192,6 @@ def update_year_data(year: str, dry_run: bool = False, force: bool = False):
         SCORES_CSV,
         ["ano", "disciplina", "acertos", "escore"],
         nested_scores_to_csv_rows(updated_scores),
-    )
-
-    atomic_write_json(RANKINGS_JSON, updated_rankings)
-    atomic_write_csv(
-        RANKINGS_CSV,
-        ["ano", "curso", "nota_final", "modalidade", "situacao"],
-        rankings_to_csv_rows(updated_rankings),
     )
 
     atomic_write_json(ESSAY_JSON, updated_essay)
