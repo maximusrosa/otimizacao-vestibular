@@ -11,13 +11,14 @@ from pathlib import Path
 import pytest
 
 from src.constants import SUBJECTS, MIN_HITS, MAX_HITS, FOREIGN_LANGUAGES
+from src.essay_scores import build_essay_score_options, fetch_essay_stats
 from src.get_ranking import get_ranking, get_min_AC
 from src.get_scores import get_scores
 from src.optimization import optimization
 
 EXPECTED_LEN = MAX_HITS - MIN_HITS + 1
 
-LIVE_COURSE = "Ciência da Computação"
+LIVE_COURSE = "Ciência da Computação - Bacharelado"
 LIVE_YEAR = "2025"
 
 _has_chrome = any(
@@ -99,8 +100,23 @@ def test_optimize_full_pipeline_live(in_backend_dir):
     std_scores = get_scores("2025", "Inglês")
     ranking = get_ranking(LIVE_YEAR, LIVE_COURSE)
     min_AC = get_min_AC(ranking, "AC")
+    essay_stats = fetch_essay_stats()[LIVE_YEAR]
+    essay_options = build_essay_score_options(
+        4.5,
+        15.0,
+        essay_stats["mean"],
+        essay_stats["std_dev"],
+    )
 
-    result = optimization(LIVE_COURSE, min_AC, std_scores, {}, SUBJECTS)
+    result = optimization(
+        LIVE_COURSE,
+        min_AC,
+        std_scores,
+        {},
+        [subject for subject in SUBJECTS if subject != "PORT_RED"],
+        essay_options,
+        "combined",
+    )
 
     assert result.solve_status == "Optimal"
     assert result.threshold == min_AC
@@ -111,4 +127,3 @@ def test_optimize_full_pipeline_live(in_backend_dir):
     for subject, info in result.chosen_hits.items():
         assert MIN_HITS <= info["num_hits"] <= MAX_HITS, subject
         assert info["EP"] > 0, subject
-

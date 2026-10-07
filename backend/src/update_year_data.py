@@ -10,19 +10,20 @@ from pathlib import Path
 
 import requests
 
-from ..constants import (
+from .constants import (
+    DATA_DIR as APP_DATA_DIR,
     FOREIGN_LANGUAGES,
     MAX_HITS,
     MIN_HITS,
     SCORES_URL,
     SUBJECT_NAME_TO_CODE,
 )
-from ..essay_scores import fetch_essay_stats
+from .essay_scores import fetch_essay_stats
 from .save_rankings import fetch_rankings_for_year
 from .save_scores import parse_all_scores
 
 
-DATA_DIR = Path("data")
+DATA_DIR = APP_DATA_DIR
 SCORES_JSON = DATA_DIR / "escores_padronizados.json"
 SCORES_CSV = DATA_DIR / "escores_padronizados.csv"
 RANKINGS_JSON = DATA_DIR / "rankings_completos.json"

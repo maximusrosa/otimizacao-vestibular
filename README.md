@@ -89,7 +89,7 @@ FastAPI
     |-- database.py                  dados JSON carregados em memória
     |-- essay_scores.py              scraping e cálculo da Redação
     |-- optimization.py              modelo PuLP/CBC
-    `-- scripts/update_year_data.py  atualização anual validada
+    `-- update_year_data.py          atualização anual validada
             |-- escores objetivos (requests + BeautifulSoup)
             |-- estatísticas da Redação (requests + BeautifulSoup)
             `-- rankings (Selenium + Chrome)
@@ -121,20 +121,20 @@ Execute os comandos a partir de `backend/`. Primeiro valide toda a coleta sem
 alterar os arquivos:
 
 ```bash
-python -m src.scripts.update_year_data --year 2026 --dry-run
+python -m src.update_year_data --year 2026 --dry-run
 ```
 
 Se a validação terminar com sucesso, publique o novo ano:
 
 ```bash
-python -m src.scripts.update_year_data --year 2026
+python -m src.update_year_data --year 2026
 ```
 
 Se o ano já existir, a atualização é interrompida. Para uma substituição
 intencional, use:
 
 ```bash
-python -m src.scripts.update_year_data --year 2026 --force
+python -m src.update_year_data --year 2026 --force
 ```
 
 O procedimento executa estas protecoes:
@@ -224,10 +224,9 @@ backend/
 |   |-- database.py
 |   |-- essay_scores.py
 |   |-- optimization.py
-|   `-- scripts/
-|       |-- save_scores.py
-|       |-- save_rankings.py
-|       `-- update_year_data.py
+|   |-- save_scores.py
+|   |-- save_rankings.py
+|   `-- update_year_data.py
 `-- tests/
 
 frontend/
@@ -301,3 +300,35 @@ npm test
 - backend: Python, FastAPI, PuLP/CBC, BeautifulSoup e Selenium;
 - frontend: React, React Router e Recharts;
 - infraestrutura: Docker, Docker Compose e nginx.
+### E2E (Playwright)
+
+Requer o stack Docker rodando (`docker compose up -d`). A partir de `frontend/`:
+
+```bash
+# Primeira vez: baixar binários do browser
+npx playwright install chromium
+
+# Roda os testes e2e
+npx playwright test
+
+# Com browser visível
+npx playwright test --headed
+
+# Relatório HTML após a execução
+npx playwright show-report
+```
+
+### Rodando os módulos isoladamente
+
+```bash
+python -m src.get_scores
+
+python -m src.get_ranking
+```
+
+## Licença
+
+Copyright © 2026 Maximus Borges. Todos os direitos reservados.
+
+Esse projeto é proprietário. Nenhuma permissão é concedida para copiar, modificar, redistribuir ou usar este software sem permissão escrita explícita.
+Ver [LICENSE](./LICENSE).

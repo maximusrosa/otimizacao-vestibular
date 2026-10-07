@@ -115,16 +115,8 @@ tbody input[type="checkbox"] {
   background: #0b5fa5;
 }
 
-.objective-managed {
-  color: #777;
-  text-align: center;
-}
-
-.port-red-objective {
-  max-width: 360px;
-  margin: 0 0 24px auto;
-}
-
-.port-red-objective select {
-  width: 100%;
+.port-red-note {
+  color: #555;
+  font-size: 12px;
+  margin: -12px 0 24px;
 }

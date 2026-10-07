@@ -1,18 +1,22 @@
 from contextlib import asynccontextmanager
+from typing import Literal
+
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, model_validator
-from typing import Literal
 
-# Importando os scripts de otimização e utils originais
-from .optimization import optimization
-from .essay_scores import build_essay_score_options
-from .constants import ESSAY_SCORE_STEP, MIN_APPROVED_ESSAY_SCORE, MAX_ESSAY_SCORE
-
-# Importando as novas funções de banco de dados
 from . import database
+from .constants import (
+    ENTRY_MODES,
+    ESSAY_SCORE_STEP,
+    FOREIGN_LANGUAGES,
+    MAX_ESSAY_SCORE,
+    MIN_APPROVED_ESSAY_SCORE,
+)
+from .essay_scores import build_essay_score_options
+from .optimization import optimization
 
 # ==========================================
 # LIFESPAN (STARTUP / SHUTDOWN)
@@ -90,6 +94,26 @@ def health():
 def data_status():
     return database.get_data_status()
 
+@app.get("/courses", response_model=list[str])
+def get_courses(reference_year: str):
+    return database.get_courses_from_memory(reference_year)
+
+
+@app.get("/years", response_model=list[str])
+def get_years():
+    return database.get_available_years()
+
+
+@app.get("/foreign-languages", response_model=list[str])
+def get_foreign_languages():
+    return FOREIGN_LANGUAGES
+
+
+@app.get("/entry-modes", response_model=list[str])
+def get_entry_modes():
+    return ENTRY_MODES
+
+
 @app.post("/optimize")
 def optimize(user_data: UserData):
     # Os escores objetivos ja estao em memoria e cada posicao representa uma
@@ -118,7 +142,6 @@ def optimize(user_data: UserData):
         essay_stats["mean"],
         essay_stats["std_dev"],
     )
-
     result = optimization(
         user_data.course, 
         min_AC, 

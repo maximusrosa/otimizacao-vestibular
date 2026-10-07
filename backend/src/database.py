@@ -1,6 +1,7 @@
 import json
 import re
-from .constants import ENTRY_MODE_PATTERNS, STATUS_PATTERNS, ENTRY_MODES
+
+from .constants import DATA_DIR, ENTRY_MODE_PATTERNS, STATUS_PATTERNS
 
 # ==========================================
 # VARIÁVEIS GLOBAIS DE MEMÓRIA
@@ -17,10 +18,14 @@ def load_databases():
     """Carrega os tres conjuntos de dados e pre-calcula notas de corte."""
     global DB_ESCORES, DB_CUTOFFS, DB_RANKINGS_COMPLETOS, DB_REDACAO_STATS
     print("Iniciando carregamento dos dados para a memória...")
+    DB_ESCORES = {}
+    DB_CUTOFFS = {}
+    DB_RANKINGS_COMPLETOS = []
+    DB_REDACAO_STATS = {}
 
     # Carrega e PREPARA os Escores
     try:
-        with open("data/escores_padronizados.json", "r", encoding="utf-8") as f:
+        with open(DATA_DIR / "escores_padronizados.json", "r", encoding="utf-8") as f:
             raw_scores = json.load(f)
             
         # Transforma o dict {"1": 300, "2": 320} em uma lista ordenada [300, 320] UMA ÚNICA VEZ
@@ -37,7 +42,7 @@ def load_databases():
 
     # Carrega estatísticas anuais da redação
     try:
-        with open("data/redacao_stats.json", "r", encoding="utf-8") as f:
+        with open(DATA_DIR / "redacao_stats.json", "r", encoding="utf-8") as f:
             DB_REDACAO_STATS = json.load(f)
 
         print(f" -> Estatísticas de redação carregadas! Anos: {list(DB_REDACAO_STATS.keys())}")
@@ -46,7 +51,7 @@ def load_databases():
 
     # Carrega os Rankings e pré-calcula Notas de Corte
     try:
-        with open("data/rankings_completos.json", "r", encoding="utf-8") as f:
+        with open(DATA_DIR / "rankings_completos.json", "r", encoding="utf-8") as f:
             DB_RANKINGS_COMPLETOS = json.load(f)
             
         status_regex = re.compile("|".join(STATUS_PATTERNS.values()))
@@ -143,6 +148,18 @@ def get_data_status() -> dict[str, list[str]]:
         "ranking_years": ranking_years,
         "essay_years": sorted(DB_REDACAO_STATS.keys(), key=int),
     }
+
+
+def get_available_years() -> list[str]:
+    """Retorna somente anos completos, prontos para uma otimização consistente."""
+    ranking_years = set(DB_CUTOFFS)
+    complete_years = set(DB_ESCORES) & ranking_years & set(DB_REDACAO_STATS)
+    return sorted(complete_years, key=int, reverse=True)
+
+
+def get_courses_from_memory(year: str) -> list[str]:
+    """Lista os cursos que possuem ao menos uma nota de corte no ano informado."""
+    return sorted(DB_CUTOFFS.get(year, {}).keys())
 
 
 def get_cutoff_graph_from_memory(reference_year: int, course: str, entry_mode: str, years_back: int = 5) -> dict[int, float]:

@@ -9,7 +9,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
 from bs4 import BeautifulSoup
 
-from ..constants import RANKING_URL
+from .constants import RANKING_URL
 from .utils import COURSE_MAPPING
 
 # SALVAMENTO EM ARQUIVOS (JSON e CSV)

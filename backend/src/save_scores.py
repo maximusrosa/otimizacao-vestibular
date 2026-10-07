@@ -2,7 +2,7 @@ import json
 import requests
 import csv
 from bs4 import BeautifulSoup
-from ..constants import (
+from .constants import (
     MIN_HITS, MAX_HITS, SCORES_URL, SUBJECT_NAME_TO_CODE, FOREIGN_LANGUAGES
 )
 

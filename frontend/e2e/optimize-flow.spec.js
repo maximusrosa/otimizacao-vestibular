@@ -1,7 +1,7 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
 
-// The /optimize endpoint runs Selenium + network scraping — allow up to 90s.
+// A primeira carga do solver pode ser mais lenta no stack Docker.
 const OPTIMIZE_TIMEOUT = 90_000;
 
 test('fluxo completo: home → otimizar (BIO+GEO) → resultados', async ({ page }) => {
@@ -14,6 +14,14 @@ test('fluxo completo: home → otimizar (BIO+GEO) → resultados', async ({ page
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: /otimizador de acertos/i })).toBeVisible();
+
+  const filters = page.locator('.filters select');
+  await expect(filters.nth(0)).toBeEnabled();
+  await filters.nth(0).selectOption('2025');
+  await expect(filters.nth(1)).toBeEnabled({ timeout: OPTIMIZE_TIMEOUT });
+  await filters.nth(1).selectOption({ label: 'Ciência da Computação - Bacharelado' });
+  await filters.nth(2).selectOption('Inglês');
+  await filters.nth(3).selectOption('LI_EP');
 
   // Select two subjects to minimize
   await page.locator('#BIO').check();
@@ -28,6 +36,8 @@ test('fluxo completo: home → otimizar (BIO+GEO) → resultados', async ({ page
     foreign_language: 'Inglês',
     reference_year: '2025',
     entry_method: 'LI_EP',
+    essay_constraints: { min: 4.5, max: 15 },
+    port_red_objective: 'none',
   });
   expect(Object.keys(capturedPayload.constraints)).toHaveLength(9);
   expect(capturedPayload.min_subjects).toEqual(expect.arrayContaining(['BIO', 'GEO']));
@@ -36,7 +46,7 @@ test('fluxo completo: home → otimizar (BIO+GEO) → resultados', async ({ page
   // --- Results page assertions ---
   await expect(page.getByRole('heading', { name: /otimizador de acertos/i })).toBeVisible();
   const rows = page.locator('table.results-table tbody tr');
-  await expect(rows).toHaveCount(8);
+  await expect(rows).toHaveCount(11);
   await expect(rows.first()).toContainText('Biologia');
   // Bar chart only renders when historicalData from real API is non-empty
   await expect(page.locator('.historical-data-graph')).toBeVisible();

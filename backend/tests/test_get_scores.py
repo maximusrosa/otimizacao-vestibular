@@ -1,10 +1,16 @@
 import pytest
 import responses
-
-from src.constants import SUBJECTS, MIN_HITS, MAX_HITS, SCORES_URL
-from src.get_scores import _parse_float, parse_scores, get_scores
+from src.constants import MAX_HITS, MIN_HITS, SCORES_URL, SUBJECTS
+from src.get_scores import _download_scores_html, get_scores, parse_scores
 
 EXPECTED_LEN = MAX_HITS - MIN_HITS + 1  # 15 escores por disciplina
+
+
+@pytest.fixture(autouse=True)
+def clear_scores_cache():
+    _download_scores_html.cache_clear()
+    yield
+    _download_scores_html.cache_clear()
 
 # ---------- parse_scores (contra fixture real) ----------
 def test_parse_scores_returns_all_subjects(scores_html):
@@ -56,3 +62,26 @@ def test_get_scores_fetches_year_url(scores_html):
 
     assert set(scores.keys()) == set(SUBJECTS)
     assert responses.calls[0].request.url == SCORES_URL.format(year=year)
+
+
+@responses.activate
+def test_get_scores_retries_transient_failure(scores_html):
+    url = SCORES_URL.format(year="2025")
+    responses.add(responses.GET, url, status=503)
+    responses.add(responses.GET, url, body=scores_html, status=200)
+
+    scores = get_scores("2025", "Inglês")
+
+    assert set(scores) == set(SUBJECTS)
+    assert len(responses.calls) == 2
+
+
+@responses.activate
+def test_get_scores_caches_download_by_year(scores_html):
+    url = SCORES_URL.format(year="2025")
+    responses.add(responses.GET, url, body=scores_html, status=200)
+
+    get_scores("2025", "Inglês")
+    get_scores("2025", "Espanhol")
+
+    assert len(responses.calls) == 1

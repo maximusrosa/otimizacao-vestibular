@@ -4,7 +4,7 @@ import pulp
 
 from .constants import MAX_HITS, MIN_HITS, PORT_RED_OBJECTIVES, SUBJECTS
 from .essay_scores import compose_port_red_score
-from .scripts import utils
+from .utils import readCourseWeights
 
 
 PORT_RED = "PORT_RED"
@@ -46,7 +46,7 @@ def optimization(
     """Encontra acertos inteiros e uma nota de Redacao em passos de 0,1."""
     
     # Busca os pesos específicos do curso para o cálculo da média harmônica
-    weights = utils.readCourseWeights(course)
+    weights = readCourseWeights(course)
     if not weights:
         raise RuntimeError(f"Pesos não encontrados para o curso {course}.")
         

@@ -1,6 +1,6 @@
 import pytest
 
-from src.scripts.update_year_data import (
+from src.update_year_data import (
     records_to_nested_scores,
     validate_essay_for_year,
     validate_rankings_for_year,

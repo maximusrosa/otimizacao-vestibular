@@ -15,7 +15,7 @@ def standard_scores():
 @pytest.fixture(autouse=True)
 def course_weights(monkeypatch):
     monkeypatch.setattr(
-        "src.optimization.utils.readCourseWeights",
+        "src.optimization.readCourseWeights",
         lambda course: {subject: 1 for subject in SUBJECTS},
     )
 
